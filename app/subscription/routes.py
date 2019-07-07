@@ -1,0 +1,1 @@
+subscription = Blueprint('subscription', __name__)
