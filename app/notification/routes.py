@@ -5,11 +5,17 @@ import os
 import requests, json
 from app import app
 import uuid
-from app.notifiction import helper
+from app.notification import helper
 
-notification = Blueprint('notification', __name__)
+notification = Blueprint('notification', __name__, url_prefix='/notification')
 
-@notification.route('/sendEmail', methods=['GET'])
+@notification.route('/sendEmail', methods=['POST'])
 @helper.verifyEmailBody
 def sendEmail():
-    return(helper.sendingMail('guna.hk444@gmail.com'))
+    recipientEmail = request.get_json().get('emailId') 
+    subject = request.get_json().get('subject')
+    body = request.get_json().get('body')
+
+    resObj = helper.sendingMail(recipientEmail, subject, body)
+
+    return jsonify(resObj[0]), resObj[1]

@@ -17,12 +17,10 @@ CORS(app)
 # app.config.from_object(config_setting)
 
 from app.notification.routes import notification
-
 app.register_blueprint(notification)
 
-from app.subscription.routes import subscription
-
-app.register_blueprint(subscription)
+from app.client.routes import client
+app.register_blueprint(client)
 
 # from app.playlist.routes import playlist
 

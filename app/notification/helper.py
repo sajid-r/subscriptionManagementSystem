@@ -1,6 +1,8 @@
 import boto3
 from botocore.exceptions import ClientError
-def sendingMail(recepiantmail):
+from flask import request, jsonify
+import re
+def sendingMail(recepiantmail, subject, body):
     # Replace guna.hk444@gmail.com with your "From" address.
     # This address must be verified with Amazon SES.
     SENDER = "Sender Name <guna.hk444@gmail.com>"
@@ -18,7 +20,7 @@ def sendingMail(recepiantmail):
     AWS_REGION = "us-west-2"
 
     # The subject line for the email.
-    SUBJECT = "Python Project (SDK for Python)"
+    SUBJECT = subject
 
     # The email body for recipients with non-HTML email clients.
     BODY_TEXT = ("PythonProject \r\n"
@@ -74,15 +76,15 @@ def sendingMail(recepiantmail):
     # Display an error if something goes wrong. 
     except ClientError as e:
         response = e.response['Error']['Message']
+        return response, 500
     else:
         response = "Email sent!"
-    return(response)
+    return response, 200
 
 
 def verifyEmailId(emailId):
-    for emailId in body.get('emailId'):
-        if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$',emailId)==None:
-            print('Enter valid email id')
+    if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$',emailId)==None:
+        return jsonify({'msg': 'emailId is not valid.'}), 400
 
 def verifyEmailBody(func):
     def verifyBody(*args, **kwargs):
@@ -90,14 +92,17 @@ def verifyEmailBody(func):
         print(type(body))
         print(list(body.keys()))
         if 'emailId' in list(body.keys()):
+            emailId = body['emailId']
             verifyEmailId(emailId)
         else:
-            print('EmailId is mondatory')
+            return jsonify({'msg': 'emailId is not present in the request body.'}), 400
         if 'body' not in list(body.keys()):
-            print('Body part is mondatory')
+            return jsonify({'msg': 'emailId is not present in the request body.'}), 400
         if 'subject' in list(body.keys()):
             if type(body.get('subject')).__name__!='str':
-                print('subject should be in text format')
+                return jsonify({'msg': 'emailId is not in string format.'}), 400
+        else:
+            return jsonify({'msg': 'emailId is not present in the request body.'}), 400
 
-        func(*args, **kwargs)
+        return func(*args, **kwargs)
     return verifyBody
