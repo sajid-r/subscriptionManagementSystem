@@ -22,6 +22,9 @@ app.register_blueprint(notification)
 from app.client.routes import client
 app.register_blueprint(client)
 
+from app.payment.routes import payment
+app.register_blueprint(payment)
+
 # from app.playlist.routes import playlist
 
 # app.register_blueprint(playlist)

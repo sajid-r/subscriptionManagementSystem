@@ -5,7 +5,7 @@ import re
 def sendingMail(recepiantmail, subject, body):
     # Replace guna.hk444@gmail.com with your "From" address.
     # This address must be verified with Amazon SES.
-    SENDER = "Sender Name <guna.hk444@gmail.com>"
+    SENDER = "Pravallika <pravallika.juturu1@gmail.com>"
 
     # Replace guna.hk444@gmail.com with a "To" address. If your account 
     # is still in the sandbox, this address must be verified.
@@ -56,7 +56,7 @@ def sendingMail(recepiantmail, subject, body):
                 'Body': {
                     'Html': {
                         'Charset': CHARSET,
-                        'Data': BODY_HTML,
+                        'Data': body,
                     },
                     'Text': {
                         'Charset': CHARSET,
@@ -83,7 +83,7 @@ def sendingMail(recepiantmail, subject, body):
 
 
 def verifyEmailId(emailId):
-    if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$',emailId)==None:
+    if (re.search('^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$',emailId))==None:
         return jsonify({'msg': 'emailId is not valid.'}), 400
 
 def verifyEmailBody(func):
@@ -97,12 +97,20 @@ def verifyEmailBody(func):
         else:
             return jsonify({'msg': 'emailId is not present in the request body.'}), 400
         if 'body' not in list(body.keys()):
-            return jsonify({'msg': 'emailId is not present in the request body.'}), 400
+            return jsonify({'msg': 'body is not present in the request body.'}), 400
         if 'subject' in list(body.keys()):
             if type(body.get('subject')).__name__!='str':
-                return jsonify({'msg': 'emailId is not in string format.'}), 400
+                return jsonify({'msg': 'subject is not in string format.'}), 400
         else:
-            return jsonify({'msg': 'emailId is not present in the request body.'}), 400
+            return jsonify({'msg': 'subject is not present in the request body.'}), 400
+        #Checking 'cc' has valid emailIds or not
+        if 'cc' in list(body.keys()):
+            verifyEmailId('cc')
+
+        #checking 'signature' is in text or html format or not
+        if "signature" in list(body.keys()):
+            if type(body.get('signature')).__name__!='str':
+                return jsonify({'msg':'signature should be in text or html format'}),400
 
         return func(*args, **kwargs)
     return verifyBody

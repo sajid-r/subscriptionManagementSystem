@@ -1,0 +1,2 @@
+mongoConnectionURI='mongodb://localhost:27017'
+FLASK_ENV='development'
