@@ -7,8 +7,6 @@ from functools import wraps
 import traceback
 import requests
 import json
-#from app.subscription import helper
-#from app.client import helper
 
 dotenv_path = os.path.join(os.path.abspath('.'), '.env')
 load_dotenv(dotenv_path)
@@ -42,7 +40,6 @@ def checkIfClientExists(clientId):
 		return 1
 	else:
 		return 0
-
 
 def modifySubscription(subscriptionData):
 	subscriptionCollection=mongoClient['cms']['subscription']
@@ -99,17 +96,11 @@ def stopSubscriptionForASubscription(stopSubscriptionData):
 
 
 
+'''
 
+	Verify DATA
 
-
-
-
-
-
-
-
-
-
+'''
 
 def verifySubscriptionData(func):
 	@wraps(func)
@@ -121,8 +112,6 @@ def verifySubscriptionData(func):
 			return jsonify({'msg': 'did not receive request body'}), 400
 		if 'subscriptionServicesEnabled' not in reqBody.keys():
 			return jsonify({'msg': 'subscriptionServicesEnabled is not present in the request body.'}), 400
-		if 'subscriptionStartDate' not in reqBody.keys():
-			return jsonify({'msg': 'subscriptionStartDate is not present in the request body.'}), 400
 		if 'subscriptionLive' not in reqBody.keys():
 			return jsonify({'msg': 'subscriptionLive is not present in the request body.'}), 400
 
@@ -161,11 +150,8 @@ def verifymodifySubscriptionServicesData(func):
 			return jsonify({'msg': 'clientId is not present in the request body.'}), 400
 		if 'subscriptionId' not in reqBody.keys():
 			return jsonify({'msg': 'subscriptionId is not present in the request body.'}), 400
-		'''
-
 		if 'serviceInfo' not in reqBody.keys():
 			return jsonify({'msg': 'serviceInfo is not present in the request body.'}), 400
-		'''
 
 		return func(*args, **kwargs)
 	return verifyData

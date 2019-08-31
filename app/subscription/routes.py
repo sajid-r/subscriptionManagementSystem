@@ -3,7 +3,7 @@ from flask_api import status
 from app.subscription import helper
 import requests
 import json
-
+from datetime import datetime, timezone
 subscription = Blueprint('subscription', __name__, url_prefix='/subscription')
 
 @subscription.route('/addSubscription', methods=['POST'], endpoint='addSubscription')
@@ -12,18 +12,23 @@ def addSubscription():
 	subscriptionData = request.get_json()
 	
 	clientId = subscriptionData['clientId']
-    
+   
+	#checking client exist
+	resObj = helper.checkIfClientExists(clientId)
+	
+	#Client not exists
+	if (resObj == 0):
+		return jsonify({'msg': 'client id does not exist.'}), 404
+
+	#adding date and time to subscriptionStartDate
+	utc_dt = datetime.now(timezone.utc)
+	dt = utc_dt.astimezone()
+	subscriptionData.update({"subscriptionStartDate": dt})
+
+
 	#Creating subscription ID and adding to DB
 	subscriptionId = helper.createSubscriptionEntry(subscriptionData)
 
-	#checking client exist
-	resObj = helper.checkIfClientExists(clientId)
-	if resObj:
-		#Client Exists
-		clientExists = True
-		
-	else:
-		return jsonify({'msg': 'client id does not exist.'}), 404
 
 	#call client->addSubscriptionId
 	url = "http://127.0.0.1:5000/client/addSubscriptionId"
@@ -40,7 +45,7 @@ def addSubscription():
 	}
 	payload = json.dumps(payload)
 	response = requests.request("POST", url, data=payload, headers=headers)
-	return(response.text,)
+	return(response.text), 200
 
 @subscription.route('/stopSubscription', methods=['POST'], endpoint='stopSubscription')
 @helper.verifyStopSubscriptionData
@@ -71,7 +76,7 @@ def stopSubscription():
 
 	payload = json.dumps(payload)
 	response = requests.request("POST", url, data=payload, headers=headers)
-	return(response.text) 
+	return(response.text), 200 
 
 
 
@@ -91,4 +96,3 @@ def modifySubscriptionServices():
 			return jsonify({'msg': 'failed writing to DB'}), 500
 	else:
 		return jsonify({'msg': 'client id does not exist.'}), 404
-
