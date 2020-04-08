@@ -1,0 +1,7 @@
+Flask
+itsdangerous
+pyjwt
+Flask-Mail
+flask_cors
+flask_mongoengine
+dateparser
