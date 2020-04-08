@@ -6,7 +6,6 @@ from app.models.workspace import Workspace
 from app import logger
 from app.auth.email import send_email
 import os
-
 workspace = Blueprint('workspace', __name__)
 
 @workspace.route('/workspace/create', methods=['POST'])
