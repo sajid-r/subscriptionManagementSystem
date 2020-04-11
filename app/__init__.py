@@ -13,10 +13,10 @@ if (os.getenv('FLASK_ENV') == 'production'):
 	config_setting = 'app.config.ProductionConfig'
 elif (os.getenv('FLASK_ENV') == 'staging'):
 	config_setting = 'app.config.StagingConfig'
-	CORS(app, resources=r'/*', allow_headers='Content-Type')
+	CORS(app, resources=r'/*', expose_headers='Authorization')
 else:
 	config_setting = 'app.config.DevelopmentConfig'
-	CORS(app, resources=r'/*', allow_headers='Content-Type')
+	CORS(app, resources=r'/*', expose_headers='Authorization')
 	
 app.config.from_object(config_setting)
 
