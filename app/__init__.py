@@ -13,8 +13,10 @@ if (os.getenv('FLASK_ENV') == 'production'):
 	config_setting = 'app.config.ProductionConfig'
 elif (os.getenv('FLASK_ENV') == 'staging'):
 	config_setting = 'app.config.StagingConfig'
+	CORS(app, resources=r'/*', allow_headers='Content-Type')
 else:
 	config_setting = 'app.config.DevelopmentConfig'
+	CORS(app, resources=r'/*', allow_headers='Content-Type')
 	
 app.config.from_object(config_setting)
 
@@ -30,9 +32,6 @@ from app.logger import logger
 @app.route('/', methods=['GET'])
 def healthcheck():
     return "success"
-
-# Enabling CORS
-CORS(app)
 
 from app.notification.routes import notification
 app.register_blueprint(notification)
