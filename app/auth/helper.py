@@ -32,8 +32,14 @@ def token_required(f):
             })), 401
 
         try:
-            decode_response = User.decode_auth_token(token)
+            decode_response = User.decode_auth_token(token) ##checks if blacklisted
             current_user = User.objects(email_id=decode_response).first()
+            if not current_user:
+                return make_response(jsonify({
+                'status': 'failed',
+                'message': 'Invalid User'
+            })), 401
+
         except ValueError as e:
             message = str(e)
             return make_response(jsonify({
