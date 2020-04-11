@@ -11,8 +11,11 @@ app = Flask(__name__)
 # app configuration
 if (os.getenv('FLASK_ENV') == 'production'):
 	config_setting = 'app.config.ProductionConfig'
+elif (os.getenv('FLASK_ENV') == 'staging'):
+	config_setting = 'app.config.StagingConfig'
 else:
 	config_setting = 'app.config.DevelopmentConfig'
+	
 app.config.from_object(config_setting)
 
 
@@ -48,3 +51,6 @@ app.register_blueprint(workspace)
 
 from app.project.routes import project
 app.register_blueprint(project)
+
+from app.user.routes import user
+app.register_blueprint(user)

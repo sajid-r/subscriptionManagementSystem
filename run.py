@@ -1,9 +1,11 @@
-from app import app
 import os
 from dotenv import load_dotenv
-
 dotenv_path = os.path.join(os.path.abspath('.'), '.env')
 load_dotenv(dotenv_path)
+
+from app import app
+
+print(dotenv_path)
 
 if os.getenv('FLASK_ENV') == 'development':
 	host = "127.0.0.1"

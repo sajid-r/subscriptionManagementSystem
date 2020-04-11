@@ -41,22 +41,45 @@ class DevelopmentConfig(BaseConfig):
     AUTH_TOKEN_EXPIRY_SECONDS = 2592000
     MONGODB_HOST = f'{os.getenv("MONGO_LOCAL_URI")}/{os.getenv("USERS_LOCAL_DB")}'
 
+class StagingConfig(BaseConfig):
+    """
+    Staging application configuration
+    """
+    # MONGODB_SETTINGS = [
+    #     {
+    #      "ALIAS": "default",
+    #      "DB": os.getenv('users'),
+    #      "HOST": f"{os.getenv('MONGO_LOCAL_URI')}/{os.getenv('USER_DB')}",
+    #      "read_preference": ReadPreference.SECONDARY_PREFERRED,
+    #     },
+    #     {
+    #      "ALIAS": "clean_content_db",
+    #      "DB": os.getenv("CLEAN_CONTENT_DB"),
+    #      "HOST": f"{os.getenv('MONGO_LOCAL_URI')}/{os.getenv('CLEAN_CONTENT_DB')}",
+    #      "read_preference": ReadPreference.PRIMARY_PREFERRED,
+    #     }
+    # ]
+    MONGODB_HOST = os.getenv("MONGO_STAGING_URI").replace('test', os.getenv("USERS_STAGING_DB"))
+    AUTH_TOKEN_EXPIRY_SECONDS = 2592000
+
+
 class ProductionConfig(BaseConfig):
     """
     Production application configuration
     """
-    MONGODB_SETTINGS = [
-        {
-         "ALIAS": "default",
-         "DB": os.getenv('users'),
-         "HOST": f"{os.getenv('MONGO_LOCAL_URI')}/{os.getenv('USER_DB')}",
-         "read_preference": ReadPreference.SECONDARY_PREFERRED,
-        },
-        {
-         "ALIAS": "clean_content_db",
-         "DB": os.getenv("CLEAN_CONTENT_DB"),
-         "HOST": f"{os.getenv('MONGO_LOCAL_URI')}/{os.getenv('CLEAN_CONTENT_DB')}",
-         "read_preference": ReadPreference.PRIMARY_PREFERRED,
-        }
-    ]
+    # MONGODB_SETTINGS = [
+    #     {
+    #      "ALIAS": "default",
+    #      "DB": os.getenv('users'),
+    #      "HOST": f"{os.getenv('MONGO_LOCAL_URI')}/{os.getenv('USER_DB')}",
+    #      "read_preference": ReadPreference.SECONDARY_PREFERRED,
+    #     },
+    #     {
+    #      "ALIAS": "clean_content_db",
+    #      "DB": os.getenv("CLEAN_CONTENT_DB"),
+    #      "HOST": f"{os.getenv('MONGO_LOCAL_URI')}/{os.getenv('CLEAN_CONTENT_DB')}",
+    #      "read_preference": ReadPreference.PRIMARY_PREFERRED,
+    #     }
+    # ]
+    MONGODB_HOST = f'{os.getenv("MONGO_PROD_URI")}'.replace('test', os.getenv("USERS_PROD_DB"))
     AUTH_TOKEN_EXPIRY_SECONDS = 2592000

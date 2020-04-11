@@ -15,7 +15,7 @@ def rchop(thestring, ending):
 	return thestring
 
 def get_unique_id():
-	return str(uuid.uuid1())
+	return str(uuid.uuid4())
 
 def is_public_content(source):
 	public_sources = ['youtube', 'onedrive']
