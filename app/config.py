@@ -40,7 +40,7 @@ class DevelopmentConfig(BaseConfig):
     """
     AUTH_TOKEN_EXPIRY_SECONDS = 2592000
     MONGODB_HOST = f'{os.getenv("MONGO_LOCAL_URI")}/{os.getenv("USERS_LOCAL_DB")}'
-
+    
 class StagingConfig(BaseConfig):
     """
     Staging application configuration
@@ -61,6 +61,7 @@ class StagingConfig(BaseConfig):
     # ]
     MONGODB_HOST = os.getenv("MONGO_STAGING_URI").replace('test', os.getenv("USERS_STAGING_DB"))
     AUTH_TOKEN_EXPIRY_SECONDS = 2592000
+    MONGO_SSL = True
 
 
 class ProductionConfig(BaseConfig):
@@ -83,3 +84,4 @@ class ProductionConfig(BaseConfig):
     # ]
     MONGODB_HOST = f'{os.getenv("MONGO_PROD_URI")}'.replace('test', os.getenv("USERS_PROD_DB"))
     AUTH_TOKEN_EXPIRY_SECONDS = 2592000
+    MONGO_SSL = True
