@@ -1,6 +1,7 @@
 from flask import Blueprint, request, url_for, render_template
 import re
 from app.auth.helper import response, response_auth, token_required
+from app.workspace.helper import response_with_id
 from app.models.user import User
 from app.models.workspace import Workspace
 from app import logger
@@ -22,7 +23,7 @@ def create(current_user):
             workspace.create()
             current_user.workspaces.append(workspace._id)
             current_user.save()
-            return response('success', 'Workspace created successfully', 200)
+            return response_with_id('success', 'Workspace created successfully', workspace._id, 200)
         else:
             return response('failed', 'name field required in json body', 402)
 

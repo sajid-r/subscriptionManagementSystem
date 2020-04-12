@@ -47,7 +47,7 @@ def workspace_access_required(f):
     return decorated_function
 
 
-def response(status, message, status_code):
+def response_with_id(status, message, wspid, status_code):
     """
     Helper method to make an Http response
     :param status: Status
@@ -57,7 +57,8 @@ def response(status, message, status_code):
     """
     return make_response(jsonify({
         'status': status,
-        'message': message
+        'message': message,
+        'id': wspid
     })), status_code
 
 

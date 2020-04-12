@@ -2,7 +2,7 @@ from flask import Blueprint, request, url_for, render_template
 import re
 from app.auth.helper import response, response_auth, token_required
 from app.workspace.helper import workspace_access_required
-from app.project.helper import project_access_required
+from app.project.helper import project_access_required, response_with_id
 from app.models.user import User
 from app.models.workspace import Workspace
 from app.models.project import Project
@@ -30,7 +30,7 @@ def create(current_user, workspace_id):
             workspace = Workspace.get_by_id(workspace_id)
             workspace.projects.append(project._id)
             workspace.save()
-            return response('success', 'Project created successfully', 200)
+            return response_with_id('success', 'Project created successfully', project._id, 200)
         else:
             return response('failed', 'name field required in json body', 402)
 
