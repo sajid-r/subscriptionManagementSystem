@@ -32,7 +32,7 @@ def get(current_user):
             'email': current_user.email_id,
             'registeredOn' : current_user.registeredOn,
             'isActive' : current_user.isActive,
-            'isEmailVarified' : current_user.isEmailVerified,
+            'isEmailVerified' : current_user.isEmailVerified,
             'isRemoved' : current_user.isRemoved,
             'workspaces' : wsp_payload
         }
