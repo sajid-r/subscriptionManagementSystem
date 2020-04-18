@@ -46,3 +46,6 @@ app/__pycache__
 # Misc
 README_ref.md
 out
+
+
+.vscode

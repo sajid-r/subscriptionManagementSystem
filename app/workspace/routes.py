@@ -3,6 +3,7 @@ import re
 from app.auth.helper import response, response_auth, token_required
 from app.workspace.helper import response_with_id
 from app.models.user import User
+from app.models.project import Project
 from app.models.workspace import Workspace
 from app import logger
 from app.auth.email import send_email
@@ -40,13 +41,21 @@ def get(current_user):
     if wsp_id in current_user.workspaces:
         workspace = Workspace.get_by_id(wsp_id)
         if workspace:
+            projects = workspace.projects
+            prj_payload = []
+            for pid in projects:
+                prj = Project.get_by_id(pid)
+                if prj:
+                    prj_name = prj.name
+                    prj_obj = {'id': pid, 'name':prj_name}
+                    prj_payload.append(prj_obj)
             return {
                 'name': workspace.name,
                 'id': workspace._id,
                 'createdBy': workspace.createdBy,
                 'createdOn': workspace.createdOn,
                 'isActive': workspace.isActive,
-                'projects': workspace.projects
+                'projects': prj_payload
             }
         else:
             return response('failed', 'workspace not found', 404)
