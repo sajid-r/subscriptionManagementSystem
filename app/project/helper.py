@@ -17,17 +17,17 @@ def project_access_required(f):
         post_data = request.get_json()
         params = request.args
 
-        if request.method == 'POST':
-            if not 'workspaceId' in post_data.keys() or not 'projectId' in post_data.keys():
-                return make_response(jsonify({
-                    'status': 'failed',
-                    'message': 'Workpsace Id required'
-                })), 403
-            else:
-                workspaceId = post_data.get('workspaceId')
-                projectId = post_data.get('projectId')
+        # if request.method == 'POST':
+        #     if not 'workspaceId' in post_data.keys() or not 'projectId' in post_data.keys():
+        #         return make_response(jsonify({
+        #             'status': 'failed',
+        #             'message': 'Workpsace Id required'
+        #         })), 403
+        #     else:
+        #         workspaceId = post_data.get('workspaceId')
+        #         projectId = post_data.get('projectId')
         
-        if request.method == 'GET':
+        if request.method == 'GET' or request.method == 'POST':
             if not 'workspaceId' in params.keys() or not 'projectId' in params.keys():
                 return make_response(jsonify({
                     'status': 'failed',

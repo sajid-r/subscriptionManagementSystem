@@ -53,3 +53,6 @@ app.register_blueprint(project)
 
 from app.user.routes import user
 app.register_blueprint(user)
+
+from app.appointment.routes import appointment
+app.register_blueprint(appointment)

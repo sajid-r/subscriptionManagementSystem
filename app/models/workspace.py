@@ -33,12 +33,12 @@ class Workspace(db.Document):
     removedOn = db.DateTimeField(default=None, null=True)           #Has admin removed this account or person deletes own account
     createdOn = db.DateTimeField(default=None, null=True)           #When was the account removed
 
-    meta = {'db': app.config.get('USERS_DB'), 'collection': 'workspaces', 'strict': False}
+    meta = {'collection': 'workspaces', 'strict': False}
 
     def __init__(self, *args, **kwargs):
         super(Workspace, self).__init__(*args, **kwargs)
         if not self._id:
-            self._id = f"wsp{util.get_unique_id()}"
+            self._id = f"wsp{util.get_short_unique_id()}"
     
     
     def create(self, userObj=None, *args, **kwargs):

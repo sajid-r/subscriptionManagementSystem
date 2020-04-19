@@ -39,12 +39,12 @@ class User(db.Document):
     isEmailVerified = db.BooleanField(default=False)                    #If email has been verified
     # tokens = db.StringField(default=False)   #AccessTokens for console, fb messenger, etc
 
-    meta = {'db': app.config.get('USERS_DB'), 'collection': app.config.get('USER_COLLECTION'), 'strict': False}
+    meta = {'collection': 'users', 'strict': False}
 
     def __init__(self, *args, **kwargs):
         super(User, self).__init__(*args, **kwargs)
         if not self._id:
-            self._id = f"usr{util.get_unique_id()}"
+            self._id = f"usr{util.get_short_unique_id()}"
     
     
     def sign_up(self, userObj=None, *args, **kwargs):

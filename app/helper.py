@@ -17,6 +17,9 @@ def rchop(thestring, ending):
 def get_unique_id():
 	return str(uuid.uuid4())
 
+def get_short_unique_id():
+	return str(uuid.uuid4())[:8]
+
 def is_public_content(source):
 	public_sources = ['youtube', 'onedrive']
 	if source and source.lower() in public_sources:

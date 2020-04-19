@@ -5,8 +5,7 @@ load_dotenv(dotenv_path)
 
 from app import app
 
-print(dotenv_path)
-print(os.getenv("MONGO_STAGING_URI").replace('test', os.getenv("USERS_STAGING_DB")))
+print(app.config['MONGODB_HOST'])
 
 if os.getenv('FLASK_ENV') == 'development':
 	host = "127.0.0.1"

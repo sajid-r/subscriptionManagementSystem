@@ -34,12 +34,12 @@ class Project(db.Document):
     createdOn = db.DateTimeField(default=None, null=True)
     services = db.ListField(db.StringField(), default=[])           #When was the account removed
 
-    meta = {'db': app.config.get('USERS_DB'), 'collection': 'projects', 'strict': False}
+    meta = {'collection': 'projects', 'strict': False}
 
     def __init__(self, *args, **kwargs):
         super(Project, self).__init__(*args, **kwargs)
         if not self._id:
-            self._id = f"prj{util.get_unique_id()}"
+            self._id = f"prj{util.get_short_unique_id()}"
     
     
     def create(self, userObj=None, *args, **kwargs):
