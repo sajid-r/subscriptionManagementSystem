@@ -55,11 +55,8 @@ class Appointment(db.Document):
 
     @staticmethod
     def get_appointments(start_date, end_date, projectId):
-        print("#######", start_date)
         dt_start = datetime.datetime.fromisoformat(start_date)
-        print("#######", dt_start)
         dt_end = datetime.datetime.fromisoformat(end_date)
-        print("#######", dt_end)
 
         objects = Appointment.objects(Q(startDate__gte=start_date) & Q(startDate__lte=end_date) & Q(projectId=projectId)).all()
 
@@ -72,7 +69,7 @@ class Appointment(db.Document):
                 'id':app._id,
                 'start': app.startDate,
                 'end': app.endDate,
-                'name': app.participantName,
+                'title': app.participantName,
                 'phone': app.participantPhone,
                 'email': app.participantEmail,
                 'active': app.isActive
