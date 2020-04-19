@@ -86,18 +86,18 @@ class ProductionConfig(BaseConfig):
         {
          "ALIAS": "fulfillment",
          "DB": os.getenv('FULFILLMENT_PROD_DB'),
-         "HOST": os.getenv("MONGO_PROD_URI")}.replace('test', os.getenv("FULFILLMENT_PROD_DB")),
-         "read_preference": ReadPreference.SECONDARY_PREFERRED,
+         "HOST": os.getenv("MONGO_PROD_URI").replace('test', os.getenv("FULFILLMENT_PROD_DB")),
+         "read_preference": ReadPreference.SECONDARY_PREFERRED
         },
         {
          "ALIAS": "default",
          "DB": os.getenv("ARENA_PROD_DB"),
-         "HOST": os.getenv("MONGO_PROD_URI")}.replace('test', os.getenv("ARENA_PROD_DB")),
+         "HOST": os.getenv("MONGO_PROD_URI").replace('test', os.getenv("ARENA_PROD_DB")),
          "read_preference": ReadPreference.PRIMARY_PREFERRED,
         }
     ]
 
-    MONGODB_HOST = os.getenv("MONGO_PROD_URI")}.replace('test', os.getenv("ARENA_PROD_DB"))
+    MONGODB_HOST = os.getenv("MONGO_PROD_URI").replace('test', os.getenv("ARENA_PROD_DB"))
     AUTH_TOKEN_EXPIRY_SECONDS = 2592000
     FULFILLMENT_DB = os.getenv("FULFILLMENT_PROD_DB")
     MONGO_SSL = True
