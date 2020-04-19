@@ -62,13 +62,13 @@ class StagingConfig(BaseConfig):
         {
          "ALIAS": "fulfillment",
          "DB": os.getenv('FULFILLMENT_STAGING_DB'),
-         "HOST": f"{os.getenv('MONGO_LOCAL_URI')}/{os.getenv('FULFILLMENT_STAGING_DB')}",
+         "HOST": os.getenv("MONGO_STAGING_URI").replace('test', os.getenv("FULFILLMENT_STAGING_DB")),
          "read_preference": ReadPreference.SECONDARY_PREFERRED,
         },
         {
          "ALIAS": "default",
-         "DB": "cms",
-         "HOST": f"{os.getenv('MONGO_LOCAL_URI')}/{os.getenv('ARENA_STAGING_DB')}",
+         "DB": os.getenv("ARENA_STAGING_DB"),
+         "HOST": os.getenv("MONGO_STAGING_URI").replace('test', os.getenv("ARENA_STAGING_DB")),
          "read_preference": ReadPreference.PRIMARY_PREFERRED,
         }
     ]
@@ -86,18 +86,18 @@ class ProductionConfig(BaseConfig):
         {
          "ALIAS": "fulfillment",
          "DB": os.getenv('FULFILLMENT_PROD_DB'),
-         "HOST": f"{os.getenv('MONGO_LOCAL_URI')}/{os.getenv('FULFILLMENT_PROD_DB')}",
+         "HOST": os.getenv("MONGO_PROD_URI")}.replace('test', os.getenv("FULFILLMENT_PROD_DB")),
          "read_preference": ReadPreference.SECONDARY_PREFERRED,
         },
         {
          "ALIAS": "default",
-         "DB": "cms",
-         "HOST": f"{os.getenv('MONGO_PROD_URI')}/{os.getenv('ARENA_PROD_DB')}",
+         "DB": os.getenv("ARENA_PROD_DB"),
+         "HOST": os.getenv("MONGO_PROD_URI")}.replace('test', os.getenv("ARENA_PROD_DB")),
          "read_preference": ReadPreference.PRIMARY_PREFERRED,
         }
     ]
 
-    MONGODB_HOST = f'{os.getenv("MONGO_PROD_URI")}'.replace('test', os.getenv("ARENA_PROD_DB"))
+    MONGODB_HOST = os.getenv("MONGO_PROD_URI")}.replace('test', os.getenv("ARENA_PROD_DB"))
     AUTH_TOKEN_EXPIRY_SECONDS = 2592000
     FULFILLMENT_DB = os.getenv("FULFILLMENT_PROD_DB")
     MONGO_SSL = True
