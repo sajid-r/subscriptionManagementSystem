@@ -13,10 +13,10 @@ if (os.getenv('FLASK_ENV') == 'production'):
 	config_setting = 'app.config.ProductionConfig'
 elif (os.getenv('FLASK_ENV') == 'staging'):
 	config_setting = 'app.config.StagingConfig'
-	CORS(app, resources=r'/*', expose_headers='Authorization')
+	CORS(app, origins=['localhost', 'fronteous.com', 'heroku.com'], expose_headers='Authorization', supports_credentials=True)
 else:
 	config_setting = 'app.config.DevelopmentConfig'
-	CORS(app, resources=r'/*', expose_headers='Authorization')
+	CORS(app, origins=['localhost', 'fronteous.com', 'heroku.com'], expose_headers='Authorization', supports_credentials=True)
 	
 app.config.from_object(config_setting)
 
