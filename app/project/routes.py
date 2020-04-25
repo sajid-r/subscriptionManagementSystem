@@ -6,6 +6,7 @@ from app.project.helper import project_access_required, response_with_id
 from app.models.user import User
 from app.models.workspace import Workspace
 from app.models.project import Project
+from app.models.service import Service
 from app import logger
 from app.auth.email import send_email
 import os
@@ -36,17 +37,24 @@ def create(current_user, workspace_id):
 
     return response('failed', 'Content-type must be json', 402)
 
-
 @project.route('/project/get', methods=['GET'])
 @token_required
 @project_access_required
 def get(current_user, workspaceId, projectId):
     """
-    Get a project by workspace id, projectId
+    Get a project by project id
     :return: Http Json response
     """
     project = Project.get_by_id(projectId)
+
     if project:
+        services = project.services
+        srv_payload = []
+        for sid in services:
+            srv = Service.get_by_id(sid)
+            if srv:
+                srv_obj = {'id': srv._id, 'serviceType':srv.serviceType, 'serviceMeta':srv.serviceMeta}
+                srv_payload.append(srv_obj)
         return {
             'name': project.name,
             'id': project._id,
@@ -57,3 +65,4 @@ def get(current_user, workspaceId, projectId):
         }
     else:
         return response('failed', 'project not found', 404)
+    
