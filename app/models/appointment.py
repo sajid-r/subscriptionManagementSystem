@@ -36,7 +36,7 @@ class Appointment(db.Document):
     startDate = db.DateTimeField(required=True)
     status = db.StringField(default="")
 
-    meta = {'db_alias': app.config['FULFILLMENT_DB'], 'collection': 'appointments', 'strict': False}
+    meta = {'db_alias': 'fulfillment', 'collection': 'appointments', 'strict': False}
 
     def __init__(self, *args, **kwargs):
         super(Appointment, self).__init__(*args, **kwargs)
