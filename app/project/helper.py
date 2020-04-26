@@ -19,7 +19,9 @@ def project_access_required(f):
         if request.method == 'POST':
             #first checks in post body and then query params as fallback
             post_data = request.get_json()
+            print(post_data.keys())
             if not 'workspaceId' in post_data.keys() or not 'projectId' in post_data.keys():
+                print("######")
                 if not 'workspaceId' in params.keys() or not 'projectId' in params.keys():
                     return make_response(jsonify({
                         'status': 'failed',
@@ -29,10 +31,11 @@ def project_access_required(f):
                     workspaceId = params.get('workspaceId')
                     projectId = params.get('projectId')
             else:
+                print("1234123412341234")
                 workspaceId = post_data.get('workspaceId')
                 projectId = post_data.get('projectId')
         
-        if request.method == 'GET' or request.method == 'POST':
+        elif request.method == 'GET':
             if not 'workspaceId' in params.keys() or not 'projectId' in params.keys():
                 return make_response(jsonify({
                     'status': 'failed',
