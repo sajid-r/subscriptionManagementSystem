@@ -17,7 +17,7 @@ service = Blueprint('service', __name__)
 @project_access_required
 def create(current_user, workspaceId, projectId):
     """
-        Create a workspace. Reuires login
+        Create a service. Reuires login
     """
     if request.content_type == 'application/json':
         post_data = request.get_json(force=True)
@@ -36,7 +36,7 @@ def create(current_user, workspaceId, projectId):
             project.services.append(service._id)
             project.save()
             
-            return response_with_id('success', 'Service created successfully', project._id, 200)
+            return response_with_id('success', 'Service created successfully', service._id, 200)
         else:
             return response('failed', 'Required data not found in POST body.', 402)
 
@@ -48,19 +48,33 @@ def create(current_user, workspaceId, projectId):
 @project_access_required
 def get(current_user, workspaceId, projectId):
     """
-    Get a project by workspace id, projectId
+    Get a service by service id or project id
     :return: Http Json response
     """
     serviceId = request.args.get('serviceId')
-    service = Service.get_by_id(serviceId)
-    if service:
-        return {
-            'serviceType': service.serviceType,
-            'id': service._id,
-            'createdBy': service.createdBy,
-            'createdOn': service.createdOn,
-            'isActive': service.isActive,
-            'serviceMeta': service.services
-        }
+    if serviceId:
+        service = Service.get_by_id(serviceId)
+        if service:
+            return {
+                'serviceType': service.serviceType,
+                'id': service._id,
+                'createdBy': service.createdBy,
+                'createdOn': service.createdOn,
+                'isActive': service.isActive,
+                'serviceMeta': service.services
+            }
+        else:
+            return response('failed', 'service not found', 404)
     else:
-        return response('failed', 'service not found', 404)
+        #Get by Project ID
+        project = Project.get_by_id(projectId)
+        services = project.services
+        payload = []
+        for service_id in services:
+            service = Service.get_by_id(service_id)
+            payload.append({"id": service_id, 
+                            "serviceType": service.serviceType, 
+                            "isActive": service.isActive,
+                            "serviceMeta": service.serviceMeta})
+        
+        return {'services':payload} 

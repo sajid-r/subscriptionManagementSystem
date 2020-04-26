@@ -56,3 +56,6 @@ app.register_blueprint(user)
 
 from app.appointment.routes import appointment
 app.register_blueprint(appointment)
+
+from app.service.routes import service
+app.register_blueprint(service)

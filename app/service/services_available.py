@@ -4,5 +4,6 @@ services_available = {'textChannel': 'Chat Bot Channels',
          'lead': 'Lead Generator',
          'faq': 'FAQ Assistant',
          'pushMessage': 'Push Notifications',
-         'ecomm': 'Ecommerce'
+         'ecomm': 'Ecommerce',
+         'bot': 'Virtual Assistant'
          }

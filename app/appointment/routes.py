@@ -42,7 +42,7 @@ def add(current_user, workspaceId, projectId):
                 participant=post_data.get('participant'),
                 appointmentChannel=post_data.get('appointmentChannel'),
                 participantPhone=post_data.get('participantPhone'),
-                projectId=post_data.get('projectId')
+                projectId=projectId
                 )
         app.create()
         return response_with_id('success', 'Appointment created successfully', app._id, 200)

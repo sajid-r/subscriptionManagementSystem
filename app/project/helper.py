@@ -14,24 +14,29 @@ def project_access_required(f):
 
     @wraps(f)
     def decorated_function(current_user, *args, **kwargs):
-        post_data = request.get_json()
         params = request.args
 
-        # if request.method == 'POST':
-        #     if not 'workspaceId' in post_data.keys() or not 'projectId' in post_data.keys():
-        #         return make_response(jsonify({
-        #             'status': 'failed',
-        #             'message': 'Workpsace Id required'
-        #         })), 403
-        #     else:
-        #         workspaceId = post_data.get('workspaceId')
-        #         projectId = post_data.get('projectId')
+        if request.method == 'POST':
+            #first checks in post body and then query params as fallback
+            post_data = request.get_json()
+            if not 'workspaceId' in post_data.keys() or not 'projectId' in post_data.keys():
+                if not 'workspaceId' in params.keys() or not 'projectId' in params.keys():
+                    return make_response(jsonify({
+                        'status': 'failed',
+                        'message': 'Workpsace Id and Project Id required'
+                    })), 403
+                else:
+                    workspaceId = params.get('workspaceId')
+                    projectId = params.get('projectId')
+            else:
+                workspaceId = post_data.get('workspaceId')
+                projectId = post_data.get('projectId')
         
         if request.method == 'GET' or request.method == 'POST':
             if not 'workspaceId' in params.keys() or not 'projectId' in params.keys():
                 return make_response(jsonify({
                     'status': 'failed',
-                    'message': 'Workpsace Id required'
+                    'message': 'Workpsace Id and Project Id required'
                 })), 403
             else:
                 workspaceId = params.get('workspaceId')
