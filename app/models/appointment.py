@@ -69,10 +69,20 @@ class Appointment(db.Document):
                 'title': app.participantName,
                 'phone': app.participantPhone,
                 'email': app.participantEmail,
-                'active': app.isActive
+                'isActive': app.isActive,
+                'cssClass': 'ACTIVE' if app.isActive else 'DELETED'
             })
 
         return app_payload
+
+    @staticmethod
+    def get_by_id(app_id):
+        """
+        Filter a user by Id.
+        :param user_id:
+        :return: User or None
+        """
+        return Appointment.objects(_id=app_id).first()
 
     def delete_appointment(self, current_user):
         """
@@ -81,7 +91,7 @@ class Appointment(db.Document):
         self.isCancelled = True
         self.isActive = False
         self.cancelledOn = util.get_current_time()
-        self.cancelledBy = current_user.email
+        self.cancelledBy = current_user.email_id
         self.save()
 
 
