@@ -76,8 +76,17 @@ def update(current_user, workspaceId, projectId):
         else:
             app = Appointment.get_by_id(post_data.get('id'))
             app.update_appointment(post_data)
-            app.save()
-            return response_with_id('success', 'Appointment updated successfully', app._id, 200)
+            res_payload = {
+                'id':app._id,
+                'start': app.startDate,
+                'end': app.endDate,
+                'title': app.participantName,
+                'phone': app.participantPhone,
+                'email': app.participantEmail,
+                'isActive': app.isActive,
+                'cssClass': 'ACTIVE' if app.isActive else 'DELETED'
+            }
+            return response_with_obj('success', 'Appointment updated successfully', res_payload, 200)
     else:
         return response('failed', 'Content-type must be json', 402)
 
@@ -95,6 +104,16 @@ def remove(current_user, workspaceId, projectId):
         else:
             app = Appointment.get_by_id(post_data.get('id'))
             app.delete_appointment(current_user)
-            return response_with_id('success', 'Appointment deleted successfully', app._id, 200)
+            res_payload = {
+                'id':app._id,
+                'start': app.startDate,
+                'end': app.endDate,
+                'title': app.participantName,
+                'phone': app.participantPhone,
+                'email': app.participantEmail,
+                'isActive': app.isActive,
+                'cssClass': 'ACTIVE' if app.isActive else 'DELETED'
+            }
+            return response_with_obj('success', 'Appointment deleted successfully', res_payload, 200)
     else:
         return response('failed', 'Content-type must be json', 402)
