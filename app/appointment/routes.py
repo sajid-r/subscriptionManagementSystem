@@ -75,18 +75,21 @@ def update(current_user, workspaceId, projectId):
             return response('failed', 'Appointment Id required', 402)
         else:
             app = Appointment.get_by_id(post_data.get('id'))
-            app.update_appointment(post_data)
-            res_payload = {
-                'id':app._id,
-                'start': app.startDate,
-                'end': app.endDate,
-                'title': app.participantName,
-                'phone': app.participantPhone,
-                'email': app.participantEmail,
-                'isActive': app.isActive,
-                'cssClass': 'ACTIVE' if app.isActive else 'DELETED'
-            }
-            return response_with_obj('success', 'Appointment updated successfully', res_payload, 200)
+            if app:
+                app.update_appointment(post_data)
+                res_payload = {
+                    'id':app._id,
+                    'start': app.startDate,
+                    'end': app.endDate,
+                    'title': app.participantName,
+                    'phone': app.participantPhone,
+                    'email': app.participantEmail,
+                    'isActive': app.isActive,
+                    'cssClass': 'ACTIVE' if app.isActive else 'DELETED'
+                }
+                return response_with_obj('success', 'Appointment updated successfully', res_payload, 200)
+            else:
+                response('failed', 'Appointment not found', 402)
     else:
         return response('failed', 'Content-type must be json', 402)
 
@@ -103,17 +106,21 @@ def remove(current_user, workspaceId, projectId):
             return response('failed', 'Appointment Id required', 402)
         else:
             app = Appointment.get_by_id(post_data.get('id'))
-            app.delete_appointment(current_user)
-            res_payload = {
-                'id':app._id,
-                'start': app.startDate,
-                'end': app.endDate,
-                'title': app.participantName,
-                'phone': app.participantPhone,
-                'email': app.participantEmail,
-                'isActive': app.isActive,
-                'cssClass': 'ACTIVE' if app.isActive else 'DELETED'
-            }
-            return response_with_obj('success', 'Appointment deleted successfully', res_payload, 200)
+            if app:
+                app.delete_appointment(current_user)
+                res_payload = {
+                    'id':app._id,
+                    'start': app.startDate,
+                    'end': app.endDate,
+                    'title': app.participantName,
+                    'phone': app.participantPhone,
+                    'email': app.participantEmail,
+                    'isActive': app.isActive,
+                    'cssClass': 'ACTIVE' if app.isActive else 'DELETED'
+                }
+                return response_with_obj('success', 'Appointment deleted successfully', res_payload, 200)
+            else: 
+                response('failed', 'Appointment not found', 402)
+
     else:
         return response('failed', 'Content-type must be json', 402)
