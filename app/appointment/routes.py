@@ -55,6 +55,8 @@ def add(current_user, workspaceId, projectId):
                 'phone': app.participantPhone,
                 'email': app.participantEmail,
                 'isActive': app.isActive,
+                'provider': app.provider,
+                'location': app.location,
                 'cssClass': 'ACTIVE' if app.isActive else 'DELETED'
             }
         
@@ -85,6 +87,8 @@ def update(current_user, workspaceId, projectId):
                     'phone': app.participantPhone,
                     'email': app.participantEmail,
                     'isActive': app.isActive,
+                    'provider': app.provider,
+                    'location': app.location,
                     'cssClass': 'ACTIVE' if app.isActive else 'DELETED'
                 }
                 return response_with_obj('success', 'Appointment updated successfully', res_payload, 200)
@@ -115,6 +119,8 @@ def remove(current_user, workspaceId, projectId):
                     'title': app.participantName,
                     'phone': app.participantPhone,
                     'email': app.participantEmail,
+                    'provider': app.provider,
+                    'location': app.location,
                     'isActive': app.isActive,
                     'cssClass': 'ACTIVE' if app.isActive else 'DELETED'
                 }

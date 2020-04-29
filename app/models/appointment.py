@@ -70,6 +70,8 @@ class Appointment(db.Document):
                 'phone': app.participantPhone,
                 'email': app.participantEmail,
                 'isActive': app.isActive,
+                'provider': app.provider,
+                'location': app.location,
                 'cssClass': 'ACTIVE' if app.isActive else 'DELETED'
             })
 
@@ -99,16 +101,16 @@ class Appointment(db.Document):
         """
         Updates an appointment using the update_obj
         """
-        if 'start' in update_obj.keys():
-            self.startDate = update_obj.get('start')
-        if 'end' in update_obj.keys():
-            self.endDate = update_obj.get('end')
-        if 'name' in update_obj.keys():
-            self.participantName = update_obj.get('name')
-        if 'phone' in update_obj.keys():
-            self.participantPhone = update_obj.get('phone')
-        if 'email' in update_obj.keys():
-            self.participantEmail = update_obj.get('email')
+        if 'startDate' in update_obj.keys():
+            self.startDate = update_obj.get('startDate')
+        if 'endDate' in update_obj.keys():
+            self.endDate = update_obj.get('endDate')
+        if 'participantName' in update_obj.keys():
+            self.participantName = update_obj.get('participantName')
+        if 'participantPhone' in update_obj.keys():
+            self.participantPhone = update_obj.get('participantPhone')
+        if 'participantEmail' in update_obj.keys():
+            self.participantEmail = update_obj.get('participantEmail')
         if 'provider' in update_obj.keys():
             self.provider = update_obj.get('provider')
         if 'location' in update_obj.keys():
