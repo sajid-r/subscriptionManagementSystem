@@ -20,7 +20,7 @@ class Service(db.Document):
     isRemoved = db.BooleanField(required=True, default=False)   
     removedOn = db.DateTimeField(default=None, null=True)
     createdOn = db.DateTimeField(default=None, null=True, required=True)
-    serviceMeta = db.DictField(default={}, required=True)
+    serviceMeta = db.DictField(default={})
 
     meta = {'collection': 'services', 'strict': False}
 
@@ -56,4 +56,18 @@ class Service(db.Document):
         self.isActive = False
         self.isRemoved = True
         self.removedOn = util.get_current_time()
+        self.save()
+
+    def deactivate(self):
+        """
+        Deactivates service
+        """
+        self.isActive = False
+        self.save()
+
+    def activate(self):
+        """
+        Deactivates service
+        """
+        self.isActive = True
         self.save()

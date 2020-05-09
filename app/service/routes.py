@@ -3,6 +3,7 @@ import re
 from app.auth.helper import response, response_auth, token_required
 from app.workspace.helper import workspace_access_required
 from app.project.helper import project_access_required, response_with_id
+from app.service.helper import response_with_obj
 from app.models.user import User
 from app.models.workspace import Workspace
 from app.models.project import Project
@@ -53,6 +54,7 @@ def get(current_user, workspaceId, projectId):
     """
     serviceId = request.args.get('serviceId')
     if serviceId:
+         #Get by Service ID
         service = Service.get_by_id(serviceId)
         if service:
             return {
@@ -61,7 +63,7 @@ def get(current_user, workspaceId, projectId):
                 'createdBy': service.createdBy,
                 'createdOn': service.createdOn,
                 'isActive': service.isActive,
-                'serviceMeta': service.services
+                'serviceMeta': service.serviceMeta
             }
         else:
             return response('failed', 'service not found', 404)
@@ -78,3 +80,72 @@ def get(current_user, workspaceId, projectId):
                             "serviceMeta": service.serviceMeta})
         
         return {'services':payload} 
+
+@service.route('/service/deactivate', methods=['POST'])
+@token_required
+@project_access_required
+def deactivate(current_user, workspaceId, projectId):
+    """
+    Deactivate a service
+    Service ID Is mandatory
+    :return: Http Json response
+    """
+    if request.content_type == 'application/json':
+        serviceId = request.get_json(force=True).get('serviceId')
+        if serviceId:
+            service = Service.get_by_id(serviceId)
+            if service:
+                service.deactivate()
+                res_payload = {
+                    'serviceType': service.serviceType,
+                    'id': service._id,
+                    'createdBy': service.createdBy,
+                    'createdOn': service.createdOn,
+                    'isActive': service.isActive,
+                    'serviceMeta': service.serviceMeta
+                }
+
+                return response_with_obj('success', 'Service deactivated successfully', res_payload, 200)
+            else:
+                return response('failed', 'service not found', 404)
+        else:
+            return response('failed', 'Service ID is required in the request payload.', 402)
+
+    else:
+        return response('failed', 'Content-type must be json', 402)
+
+
+
+@service.route('/service/activate', methods=['POST'])
+@token_required
+@project_access_required
+def activate(current_user, workspaceId, projectId):
+    """
+    Deactivate a service
+    Service ID Is mandatory
+    :return: Http Json response
+    """
+    if request.content_type == 'application/json':
+        serviceId = request.get_json(force=True).get('serviceId')
+        if serviceId:
+            service = Service.get_by_id(serviceId)
+            if service:
+                service.activate()
+                res_payload = {
+                    'serviceType': service.serviceType,
+                    'id': service._id,
+                    'createdBy': service.createdBy,
+                    'createdOn': service.createdOn,
+                    'isActive': service.isActive,
+                    'serviceMeta': service.serviceMeta
+                }
+
+                return response_with_obj('success', 'Service activated successfully', res_payload, 200)
+            else:
+                return response('failed', 'service not found', 404)
+        else:
+            return response('failed', 'Service ID is required in the request payload.', 402)
+
+    else:
+        return response('failed', 'Content-type must be json', 402)
+    
