@@ -61,7 +61,7 @@ def get(current_user, workspaceId, projectId):
             'createdBy': project.createdBy,
             'createdOn': project.createdOn,
             'isActive': project.isActive,
-            'services': project.services
+            'services': srv_payload
         }
     else:
         return response('failed', 'project not found', 404)
