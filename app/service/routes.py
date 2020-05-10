@@ -10,6 +10,7 @@ from app.models.project import Project
 from app.models.service import Service
 from app import logger
 import os
+import json
 
 service = Blueprint('service', __name__)
 
@@ -36,8 +37,13 @@ def create(current_user, workspaceId, projectId):
             project = Project.get_by_id(projectId)
             project.services.append(service._id)
             project.save()
+
+            #Replcing _id with id
+            service_obj = json.loads(service.to_json())
+            service_obj['id'] = service_obj['_id']
+            service_obj.pop('_id', None)
             
-            return response_with_obj('success', 'Service created successfully', service, 200)
+            return response_with_obj('success', 'Service created successfully', service_obj, 200)
         else:
             return response('failed', 'Required data not found in POST body.', 402)
 
