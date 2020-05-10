@@ -37,7 +37,7 @@ def create(current_user, workspaceId, projectId):
             project.services.append(service._id)
             project.save()
             
-            return response_with_id('success', 'Service created successfully', service._id, 200)
+            return response_with_obj('success', 'Service created successfully', service, 200)
         else:
             return response('failed', 'Required data not found in POST body.', 402)
 
