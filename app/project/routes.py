@@ -53,7 +53,8 @@ def get(current_user, workspaceId, projectId):
         for sid in services:
             srv = Service.get_by_id(sid)
             if srv:
-                srv_obj = {'id': srv._id, 'serviceType':srv.serviceType, 'serviceMeta':srv.serviceMeta}
+                srv_obj = {'id': srv._id, 'serviceType':srv.serviceType, 'serviceMeta':srv.serviceMeta,
+                'isActive': srv.isActive}
                 srv_payload.append(srv_obj)
         return {
             'name': project.name,
