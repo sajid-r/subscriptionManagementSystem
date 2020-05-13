@@ -49,7 +49,7 @@ def before_request():
 @app.after_request
 def after_request(response):
     if request.method == 'OPTIONS' or request.path == '/' or request.path == '/healthcheck':
-        response.headers.add('Access-Control-Allow-Origin', 'arena.fronteous.com')
+        response.headers.add('Access-Control-Allow-Origin', 'https://arena.fronteous.com')
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
         return response
