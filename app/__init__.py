@@ -11,7 +11,7 @@ app = Flask(__name__)
 # app configuration
 if (os.getenv('FLASK_ENV') == 'production'):
 	config_setting = 'app.config.ProductionConfig'
-	CORS(app, origins="fronteous.com", expose_headers='Authorization', supports_credentials=True)
+	CORS(app, origins="https://arena.fronteous.com", expose_headers='Authorization', supports_credentials=True)
 elif (os.getenv('FLASK_ENV') == 'staging'):
 	config_setting = 'app.config.StagingConfig'
 	CORS(app, origins="http://localhost:4200", expose_headers='Authorization', supports_credentials=True)
