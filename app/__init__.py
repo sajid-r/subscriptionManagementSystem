@@ -60,3 +60,6 @@ app.register_blueprint(appointment)
 
 from app.service.routes import service
 app.register_blueprint(service)
+
+from app.lead.routes import lead
+app.register_blueprint(lead)
