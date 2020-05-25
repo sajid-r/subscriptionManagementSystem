@@ -48,8 +48,14 @@ def before_request():
 # Flask method after request
 @app.after_request
 def after_request(response):
-    if request.method == 'OPTIONS' or request.path == '/' or request.path == '/healthcheck':
+    if (request.method == 'OPTIONS' or request.path == '/' or request.path == '/healthcheck') and os.getenv('FLASK_ENV') == 'production':
         response.headers.add('Access-Control-Allow-Origin', 'https://arena.fronteous.com')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+    elif (request.method == 'OPTIONS' or request.path == '/' or request.path == '/healthcheck') and os.getenv('FLASK_ENV') == 'staging':
+        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:4200')
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
