@@ -26,7 +26,7 @@ def get(current_user, workspaceId, projectId):
     leads_list = Lead.get_leads(pageNum, itemsPerPage, projectId)
     totalItems = Lead.get_total(projectId)
     
-    return {"leads":leads_list, "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage)}
+    return {"leads":leads_list, "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
 
 
 @lead.route('/lead/add', methods=['POST'])
