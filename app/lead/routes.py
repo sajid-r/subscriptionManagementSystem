@@ -20,8 +20,8 @@ def get(current_user, workspaceId, projectId):
     """
         Get Leads
     """
-    pageNum = request.args.get('pageNum', 1)
-    itemsPerPage = request.args.get('itemsPerPage', 25)
+    pageNum = int(request.args.get('pageNum', 1))
+    itemsPerPage = int(request.args.get('itemsPerPage', 25))
 
     leads_list = Lead.get_leads(pageNum, itemsPerPage, projectId)
     totalItems = Lead.get_total(projectId)
