@@ -22,11 +22,24 @@ def get(current_user, workspaceId, projectId):
     """
     pageNum = int(request.args.get('pageNum', 1))
     itemsPerPage = int(request.args.get('itemsPerPage', 25))
-
+    
     leads_list = Lead.get_leads(pageNum, itemsPerPage, projectId)
     totalItems = Lead.get_total(projectId)
+    displayName = {
+                    "id": "ID",
+                    "name": "Name",
+                    "sex": "Sex",
+                    "age": "Age",
+                    "phone": "Phone",
+                    "email": "Email",
+                    "address": "Address",
+                    "city": "City",
+                    "country": "Country",
+                    "channel": "Channel",
+                    "createdOn": "Created On"
+                }
     
-    return {"leads":leads_list, "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
+    return {"leads":leads_list, "displayName":displayName, "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
 
 
 @lead.route('/lead/add', methods=['POST'])
