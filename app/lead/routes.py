@@ -39,7 +39,7 @@ def get(current_user, workspaceId, projectId):
                     "createdOn": "Created On"
                 }
     
-    return {"leads":leads_list, "displayName":displayName, "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
+    return {"leads":leads_list, "displayName":json.dumps(displayName), "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
 
 
 @lead.route('/lead/add', methods=['POST'])
