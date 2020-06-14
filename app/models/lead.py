@@ -77,7 +77,7 @@ class Lead(db.Document):
     @staticmethod
     def search_leads(query, pageNum, itemsPerPage, projectId):
         regex = re.compile(f".*{query}.*", re.IGNORECASE)
-        objects = Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & (Q(name=regex)) | Q(email=regex) | Q(country=regex) | Q(city=regex) | Q(address=regex)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+        objects = Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & (Q(name=regex) | Q(email=regex) | Q(country=regex) | Q(city=regex) | Q(address=regex))).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
         lead_payload = []
 
         for lead in objects:
