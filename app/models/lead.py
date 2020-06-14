@@ -5,6 +5,7 @@ from app import helper as util
 import base64
 from itsdangerous import URLSafeTimedSerializer
 from mongoengine.queryset.visitor import Q
+import re
 
 class Lead(db.Document):
     """
@@ -74,6 +75,30 @@ class Lead(db.Document):
         return lead_payload
 
     @staticmethod
+    def search_leads(query, pageNum, itemsPerPage, projectId):
+        regex = re.compile(f".*{query}.*", re.IGNORECASE)
+        objects = Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & (Q(name=regex)) | Q(email=regex) | Q(country=regex) | Q(city=regex) | Q(address=regex)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+        lead_payload = []
+
+        for lead in objects:
+            lead_payload.append({
+                'id':lead._id,
+                'name': lead.firstName + " " + lead.lastName,
+                'country': lead.country,
+                'address': lead.address,
+                'age': lead.age,
+                'dob': lead.dateOfBirth,
+                'sex': lead.sex,
+                'channel': lead.channel,
+                'createdOn': lead.createdOn,
+                'city': lead.city,
+                'phone': lead.phone,
+                'email': lead.email,
+            })
+
+        return lead_payload
+
+    @staticmethod
     def get_by_id(prj_id):
         """
         Filter a user by Id.
@@ -83,11 +108,15 @@ class Lead(db.Document):
         return Project.objects(_id=prj_id).first()
 
     @staticmethod
-    def get_total(projectId):
+    def get_total(projectId, query=None):
         """
         Get total records
         """
-        return Lead.objects(projectId=projectId).count()
+        if query:
+            regex = re.compile(f".*{query}.*", re.IGNORECASE)
+            return Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & (Q(name=regex)) | Q(email=regex) | Q(country=regex) | Q(city=regex) | Q(address=regex)).count()
+        else:
+            return Lead.objects(projectId=projectId).count()
 
     def delete_lead(self, current_user):
         """

@@ -42,6 +42,36 @@ def get(current_user, workspaceId, projectId):
     return {"leads":leads_list, "displayName":json.dumps(displayName), "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
 
 
+@lead.route('/lead/search', methods=['POST'])
+@token_required
+@project_access_required
+def search(current_user, workspaceId, projectId):
+    """
+        Search Leads
+    """
+    query = request.json.get("query","")
+    pageNum = int(request.args.get('pageNum', 1))
+    itemsPerPage = int(request.args.get('itemsPerPage', 25))
+    
+    leads_list = Lead.search_leads(query, pageNum, itemsPerPage, projectId)
+    totalItems = Lead.get_total(projectId, query=query)
+    displayName = {
+                    "id": "ID",
+                    "name": "Name",
+                    "sex": "Sex",
+                    "age": "Age",
+                    "phone": "Phone",
+                    "email": "Email",
+                    "address": "Address",
+                    "city": "City",
+                    "country": "Country",
+                    "channel": "Channel",
+                    "createdOn": "Created On"
+                }
+    
+    return {"leads":leads_list, "displayName":json.dumps(displayName), "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
+
+
 @lead.route('/lead/add', methods=['POST'])
 @token_required
 @project_access_required
