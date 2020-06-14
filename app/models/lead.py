@@ -80,6 +80,8 @@ class Lead(db.Document):
         objects = Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & (Q(firstName=regex) | Q(email=regex) | Q(country=regex) | Q(city=regex) | Q(address=regex))).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
         lead_payload = []
 
+        print("#######", Lead.get_total(projectId, query=query))
+
         for lead in objects:
             lead_payload.append({
                 'id':lead._id,
