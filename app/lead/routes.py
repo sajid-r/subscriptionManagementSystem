@@ -50,11 +50,12 @@ def search(current_user, workspaceId, projectId):
         Search Leads
     """
     query = request.json.get("query","")
+    filter_obj = request.json.get("filter", {})
     pageNum = int(request.args.get('pageNum', 1))
     itemsPerPage = int(request.args.get('itemsPerPage', 25))
     
-    leads_list = Lead.search_leads(query, pageNum, itemsPerPage, projectId)
-    totalItems = Lead.get_total(projectId, query=query)
+    leads_list = Lead.search_leads(query, filter_obj, pageNum, itemsPerPage, projectId)
+    totalItems = Lead.get_total(projectId, query=query, filter_obj=filter_obj)
     displayName = {
                     "id": "ID",
                     "name": "Name",

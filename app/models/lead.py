@@ -75,13 +75,38 @@ class Lead(db.Document):
         return lead_payload
 
     @staticmethod
-    def search_leads(query, pageNum, itemsPerPage, projectId):
+    def search_leads(query, filter_obj, pageNum, itemsPerPage, projectId):
         regex = re.compile(f".*{query}.*", re.IGNORECASE)
         regex=query
-        objects = Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & (Q(firstName__icontains=regex)) | Q(email__icontains=regex) | Q(country__icontains=regex) | Q(city__icontains=regex) | Q(address__icontains=regex)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
         lead_payload = []
 
-        print("#######", Lead.get_total(projectId, query=query))
+        if query and filter_obj:
+            objects = Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & (Q(firstName__icontains=regex) | Q(email__icontains=regex) | Q(country__icontains=regex) | Q(city__icontains=regex) | Q(address__icontains=regex))).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+
+        elif filter_obj and not query:
+            #createdOn
+            start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
+            end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
+
+            #channels
+            channels = filter_obj.get('channels', [])
+            if channels == []:
+                channels = ['web', 'messenger', 'phone', 'whatsapp', 'wechat', 'line', 'telegram', 'kik', 'instagram']
+
+            objects = Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+
+        else:
+            #createdOn
+            start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
+            end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
+
+            #channels
+            channels = filter_obj.get('channels', [])
+            if channels == []:
+                channels = ['web', 'messenger', 'phone', 'whatsapp', 'wechat', 'line', 'telegram', 'kik', 'instagram']
+
+            objects = Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels) & (Q(firstName__icontains=regex) | Q(email__icontains=regex) | Q(country__icontains=regex) | Q(city__icontains=regex) | Q(address__icontains=regex))).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+
 
         for lead in objects:
             lead_payload.append({
@@ -111,14 +136,40 @@ class Lead(db.Document):
         return Project.objects(_id=prj_id).first()
 
     @staticmethod
-    def get_total(projectId, query=None):
+    def get_total(projectId, query="", filter_obj={}):
         """
         Get total records
         """
-        if query:
+        if query or filter_obj:
             regex = re.compile(f".*{query}.*", re.IGNORECASE)
             regex=query
-            return Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & (Q(firstName__icontains=regex)) | Q(email__icontains=regex) | Q(country__icontains=regex) | Q(city__icontains=regex) | Q(address__icontains=regex)).count()
+
+            if query and filter_obj:
+                return Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & (Q(firstName__icontains=regex) | Q(email__icontains=regex) | Q(country__icontains=regex) | Q(city__icontains=regex) | Q(address__icontains=regex))).count()
+
+            elif filter_obj and not query:
+                #createdOn
+                start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
+                end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
+
+                #channels
+                channels = filter_obj.get('channels', [])
+                if channels == []:
+                    channels = ['web', 'messenger', 'phone', 'whatsapp', 'wechat', 'line', 'telegram', 'kik', 'instagram']
+
+                return Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels)).count()
+
+            else:
+                #createdOn
+                start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
+                end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
+
+                #channels
+                channels = filter_obj.get('channels', [])
+                if channels == []:
+                    channels = ['web', 'messenger', 'phone', 'whatsapp', 'wechat', 'line', 'telegram', 'kik', 'instagram']
+
+                return Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels) & (Q(firstName__icontains=regex) | Q(email__icontains=regex) | Q(country__icontains=regex) | Q(city__icontains=regex) | Q(address__icontains=regex))).count()
         else:
             return Lead.objects(projectId=projectId).count()
 
