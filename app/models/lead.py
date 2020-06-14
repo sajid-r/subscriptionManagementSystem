@@ -77,7 +77,8 @@ class Lead(db.Document):
     @staticmethod
     def search_leads(query, pageNum, itemsPerPage, projectId):
         regex = re.compile(f".*{query}.*", re.IGNORECASE)
-        objects = Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & (Q(firstName=regex) | Q(email=regex) | Q(country=regex) | Q(city=regex) | Q(address=regex))).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+        regex=query
+        objects = Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & (Q(firstName__icontains=regex)) | Q(email__icontains=regex) | Q(country__icontains=regex) | Q(city__icontains=regex) | Q(address__icontains=regex)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
         lead_payload = []
 
         print("#######", Lead.get_total(projectId, query=query))
@@ -116,7 +117,8 @@ class Lead(db.Document):
         """
         if query:
             regex = re.compile(f".*{query}.*", re.IGNORECASE)
-            return Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & (Q(name=regex)) | Q(email=regex) | Q(country=regex) | Q(city=regex) | Q(address=regex)).count()
+            regex=query
+            return Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & (Q(firstName__icontains=regex)) | Q(email__icontains=regex) | Q(country__icontains=regex) | Q(city__icontains=regex) | Q(address__icontains=regex)).count()
         else:
             return Lead.objects(projectId=projectId).count()
 
