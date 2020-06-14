@@ -54,7 +54,7 @@ def search(current_user, workspaceId, projectId):
     pageNum = int(request.args.get('pageNum', 1))
     itemsPerPage = int(request.args.get('itemsPerPage', 25))
 
-    print("###########", filter_obj)
+    print("Query and Filter:", query, filter_obj)
     
     leads_list = Lead.search_leads(query, filter_obj, pageNum, itemsPerPage, projectId)
     totalItems = Lead.get_total(projectId, query=query, filter_obj=filter_obj)

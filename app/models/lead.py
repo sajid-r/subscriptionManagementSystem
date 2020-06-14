@@ -80,7 +80,7 @@ class Lead(db.Document):
         regex=query
         lead_payload = []
 
-        if query and filter_obj:
+        if query and not filter_obj:
             objects = Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & (Q(firstName__icontains=regex) | Q(email__icontains=regex) | Q(country__icontains=regex) | Q(city__icontains=regex) | Q(address__icontains=regex))).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
 
         elif filter_obj and not query:
@@ -144,7 +144,7 @@ class Lead(db.Document):
             regex = re.compile(f".*{query}.*", re.IGNORECASE)
             regex=query
 
-            if query and filter_obj:
+            if query and not filter_obj:
                 return Lead.objects(Q(projectId=projectId) & Q(isDeleted=False) & (Q(firstName__icontains=regex) | Q(email__icontains=regex) | Q(country__icontains=regex) | Q(city__icontains=regex) | Q(address__icontains=regex))).count()
 
             elif filter_obj and not query:
