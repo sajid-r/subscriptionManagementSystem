@@ -2,7 +2,7 @@ from flask import Blueprint, request, url_for, render_template
 import re
 from app.auth.helper import response, response_auth, token_required
 from app.project.helper import project_access_required, response_with_id
-from app.lead.helper import response_with_obj
+from app.chatlog.helper import response_with_obj
 from app.models.chatlog import ChatLog
 from app import logger
 import os
@@ -27,7 +27,7 @@ def get(current_user, workspaceId, projectId):
 
     chatLogObj = ChatLog.get_by_id(conversationId)
     
-    return chatLogObj
+    return response_with_obj("success", "Chat Log retrieved", chatLogObj, 200)
 
 
 @chatlog.route('/log/chat/overview', methods=['GET'])
