@@ -19,7 +19,8 @@ def get(current_user, workspaceId, projectId):
     """
         Get Chats for a conversation
     """
-    pageNum = int(request.args.get('pageNum', 1))
+
+    conversationId = request.args.get('conversationId')
     
     if not conversationId:
         return response('failed', 'Need conversation Id in query params.', 402)
@@ -38,7 +39,7 @@ def overview(current_user, workspaceId, projectId):
     """
     pageNum = int(request.args.get('pageNum', 1))
     itemsPerPage = int(request.args.get('itemsPerPage', 25))
-    totalItems = Lead.get_overview_total(projectId)
+    totalItems = ChatLog.get_overview_total(projectId)
 
     chatOverviewObj = ChatLog.get_log_overview(pageNum, itemsPerPage, projectId)
 
