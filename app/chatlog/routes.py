@@ -42,5 +42,11 @@ def overview(current_user, workspaceId, projectId):
     totalItems = ChatLog.get_overview_total(projectId)
 
     chatOverviewObj = ChatLog.get_log_overview(pageNum, itemsPerPage, projectId)
+    displayName = {
+                    "externalId": "User ID",
+                    "lastMessage": "Last Message",
+                    "lastMessageTimestamp": "Last Active",
+                    "channel": "Channel"
+                }
 
-    return {"chatOverviewObj":chatOverviewObj, "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
+    return {"chatOverviewObj":chatOverviewObj, "displayName":json.dumps(displayName), "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
