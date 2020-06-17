@@ -33,27 +33,51 @@ class BaseConfig:
     # mail accounts
     MAIL_DEFAULT_SENDER = 'fronteous@gmail.com'
 
+# class DevelopmentConfig(BaseConfig):
+#     """
+#     Development application configuration
+#     """
+#     MONGODB_SETTINGS = [
+#         {
+#          "ALIAS": "fulfillment",
+#          "DB": os.getenv('FULFILLMENT_LOCAL_DB'),
+#          "HOST": f"{os.getenv('MONGO_LOCAL_URI')}/{os.getenv('FULFILLMENT_LOCAL_DB')}",
+#          "read_preference": ReadPreference.SECONDARY_PREFERRED,
+#         },
+#         {
+#          "ALIAS": "default",
+#          "DB": os.getenv('ARENA_LOCAL_DB'),
+#          "HOST": f"{os.getenv('MONGO_LOCAL_URI')}/cms",
+#          "read_preference": ReadPreference.PRIMARY_PREFERRED,
+#         }
+#     ]
+#     AUTH_TOKEN_EXPIRY_SECONDS = 2592000
+#     MONGODB_HOST = f'{os.getenv("MONGO_LOCAL_URI")}/{os.getenv("ARENA_LOCAL_DB")}'
+    
+
 class DevelopmentConfig(BaseConfig):
     """
-    Development application configuration
+    Staging application configuration
     """
     MONGODB_SETTINGS = [
         {
          "ALIAS": "fulfillment",
-         "DB": os.getenv('FULFILLMENT_LOCAL_DB'),
-         "HOST": f"{os.getenv('MONGO_LOCAL_URI')}/{os.getenv('FULFILLMENT_LOCAL_DB')}",
+         "DB": os.getenv('FULFILLMENT_STAGING_DB'),
+         "HOST": os.getenv("MONGO_STAGING_URI").replace('test', os.getenv("FULFILLMENT_STAGING_DB")),
          "read_preference": ReadPreference.SECONDARY_PREFERRED,
         },
         {
          "ALIAS": "default",
-         "DB": "cms",
-         "HOST": f"{os.getenv('MONGO_LOCAL_URI')}/cms",
+         "DB": os.getenv("ARENA_STAGING_DB"),
+         "HOST": os.getenv("MONGO_STAGING_URI").replace('test', os.getenv("ARENA_STAGING_DB")),
          "read_preference": ReadPreference.PRIMARY_PREFERRED,
         }
     ]
+    MONGODB_HOST = os.getenv("MONGO_STAGING_URI").replace('test', os.getenv("ARENA_STAGING_DB"))
     AUTH_TOKEN_EXPIRY_SECONDS = 2592000
-    MONGODB_HOST = f'{os.getenv("MONGO_LOCAL_URI")}/{os.getenv("ARENA_LOCAL_DB")}'
-    
+    FULFILLMENT_DB = os.getenv("FULFILLMENT_STAGING_DB")
+    MONGO_SSL = True
+
 class StagingConfig(BaseConfig):
     """
     Staging application configuration

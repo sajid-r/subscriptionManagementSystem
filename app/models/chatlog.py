@@ -42,14 +42,51 @@ class ChatLog(db.Document):
         """
         Get entire conversation for a conversation id
         """
-        return ChatLog.objects(projectId=prj_id).only('channel', 'externalId', 'lastMessageTimestamp', 'lastMessage').order_by('-lastMessageTimestamp').skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+        resObj = ChatLog.objects(projectId=prj_id).only('channel', 'externalId', 'lastMessageTimestamp', 'lastMessage').order_by('-lastMessageTimestamp').skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+        retObj = []
+
+        if resObj:
+            for item in resObj:
+                retObj.append({
+                    '_id': item._id,
+                    "channel": item.channel,
+                    "externalId": item.externalId,
+                    "lastMessage": item.lastMessage,
+                    "lastMessageTimestamp": item.lastMessageTimestamp
+                })
+            return retObj
+        else:
+            return None
+
     
     @staticmethod
     def get_by_id(cnv_id):
         """
         Get entire conversation for a conversation id
         """
-        return ChatLog.objects(_id=cnv_id).first()
+        resObj = ChatLog.objects(_id=cnv_id).first()
+        retObj = {}
+        if resObj:
+            retObj = {
+                '_id': resObj._id,
+                'channel': resObj.channel,
+                'externalId': resObj.externalId,
+                'lastMessage': resObj.lastMessage,
+                'lastMessageTimestamp': resObj.lastMessageTimestamp,
+                'projectId': resObj.projectId,
+                'chats': []
+            }
+            for item in resObj.chats:
+                retObj['chats'].append({
+                    "from": item.get('from'),
+                    "message": item.get('message'),
+                    "timestamp": item.get('timestamp'),
+                    "type": item.get('type'),
+                })
+
+            return retObj
+        else:
+            return None 
 
     @staticmethod
     def get_overview_total(prj_id):
