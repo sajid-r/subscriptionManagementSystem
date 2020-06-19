@@ -66,3 +66,6 @@ app.register_blueprint(lead)
 
 from app.chatlog.routes import chatlog
 app.register_blueprint(chatlog)
+
+from app.calllog.routes import calllog
+app.register_blueprint(calllog)
