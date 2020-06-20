@@ -82,5 +82,7 @@ def search(current_user, workspaceId, projectId):
     if '(' in _from or ')' in _from or '+' in _from:
         from2 = _from.replace('(','').replace(')','').replace("+","")
         searchKeys.append(from2)
+    if '+' not in _from:
+        searchKeys.append('+'+_from)
     resObj = CallLog.get_log_search_by_phone(searchKeys, projectId)
     return response_with_obj("success", "Retrieved Call Logs", resObj, 200)
