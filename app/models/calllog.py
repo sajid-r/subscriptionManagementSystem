@@ -67,7 +67,8 @@ class CallLog(db.Document):
                 'timestamp': log.timestamp,
                 'from': log._from,
                 'to': log.to,
-                'duration': log.duration
+                'duration': log.duration,
+                'recordingLink': log.recordingLink
             })
 
         return log_payload
