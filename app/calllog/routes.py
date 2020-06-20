@@ -12,18 +12,36 @@ from app import helper as util
 
 calllog = Blueprint('CallLog', __name__)
 
-@calllog.route('/log/call/overview', methods=['GET'])
+@calllog.route('/log/call/overview', methods=['POST'])
 @token_required
 @project_access_required
 def overview(current_user, workspaceId, projectId):
     """
         Get Overview of call logs in a project
     """
+    _from = request.json.get("query","")
+    searchKeys = []
+    if _from:
+        #different combinations of phone number
+        searchKeys.append(_from)
+        if '+' in _from:
+            searchKeys.append(_from.replace("+",""))
+        if '(' in _from or ')' in _from:
+            from2 = _from.replace('(','').replace(')','')
+            searchKeys.append(from2)
+        if '(' in _from or ')' in _from or '+' in _from:
+            from2 = _from.replace('(','').replace(')','').replace("+","")
+            searchKeys.append(from2)
+        if '+' not in _from:
+            searchKeys.append('+'+_from)
+            
+    
+    filter_obj = request.json.get("filter", {})
     pageNum = int(request.args.get('pageNum', 1))
     itemsPerPage = int(request.args.get('itemsPerPage', 25))
-    totalItems = CallLog.get_overview_total(projectId)
+    totalItems = CallLog.get_overview_total(searchKeys, filter_obj, projectId)
 
-    callOverviewObj = CallLog.get_logs(pageNum, itemsPerPage, projectId)
+    callOverviewObj = CallLog.get_logs_overview(searchKeys, filter_obj, pageNum, itemsPerPage, projectId)
     displayName = {
                     "from": "From",
                     "to": "To",

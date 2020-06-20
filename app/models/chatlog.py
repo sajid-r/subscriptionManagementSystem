@@ -38,13 +38,27 @@ class ChatLog(db.Document):
 
 
     @staticmethod
-    def get_log_overview(pageNum, itemsPerPage, prj_id):
+    def get_log_overview(filter_obj, pageNum, itemsPerPage, prj_id):
         """
-        Get entire conversation for a conversation id
+        Get chat log overview using filter (optional)
         """
-        resObj = ChatLog.objects(projectId=prj_id).only('channel', 'externalId', 'lastMessageTimestamp', 'lastMessage').order_by('-lastMessageTimestamp').skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
-        retObj = []
+        if filter_obj:
+            #lastMessageTimestamp
+            start = filter_obj.get('lastMessageTimestamp',{}).get('start', datetime.datetime(1970,1,1))
+            end = filter_obj.get('lastMessageTimestamp',{}).get('end', datetime.datetime.now())
 
+            #channels
+            channels = filter_obj.get('channels', [])
+            if channels == []:
+                channels = ['web', 'messenger', 'phone', 'whatsapp', 'wechat', 'line', 'telegram', 'kik', 'instagram']
+            print(channels)
+
+            resObj = ChatLog.objects(Q(projectId=prj_id) & Q(lastMessageTimestamp__gte=start) & Q(lastMessageTimestamp__lte=end) & Q(channel__in=channels)).only('channel', 'externalId', 'lastMessageTimestamp', 'lastMessage').order_by('-lastMessageTimestamp').skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+        
+        else:
+            resObj = ChatLog.objects(projectId=prj_id).only('channel', 'externalId', 'lastMessageTimestamp', 'lastMessage').order_by('-lastMessageTimestamp').skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+        
+        retObj = []
         if resObj:
             for item in resObj:
                 retObj.append({
@@ -89,6 +103,18 @@ class ChatLog(db.Document):
             return None 
 
     @staticmethod
-    def get_overview_total(prj_id):
-        return ChatLog.objects(projectId=prj_id).count()
- 
+    def get_overview_total(prj_id, filter_obj):
+        if filter_obj:
+            #lastMessageTimestamp
+            start = filter_obj.get('lastMessageTimestamp',{}).get('start', datetime.datetime(1970,1,1))
+            end = filter_obj.get('lastMessageTimestamp',{}).get('end', datetime.datetime.now())
+
+            #channels
+            channels = filter_obj.get('channels', [])
+            if channels == []:
+                channels = ['web', 'messenger', 'phone', 'whatsapp', 'wechat', 'line', 'telegram', 'kik', 'instagram']
+
+            return ChatLog.objects(Q(projectId=prj_id) & Q(lastMessageTimestamp__gte=start) & Q(lastMessageTimestamp__lte=end) & Q(channel__in=channels)).only('channel', 'externalId', 'lastMessageTimestamp', 'lastMessage').order_by('-lastMessageTimestamp').count()
+        
+        else:
+            return ChatLog.objects(projectId=prj_id).only('channel', 'externalId', 'lastMessageTimestamp', 'lastMessage').order_by('-lastMessageTimestamp').count()

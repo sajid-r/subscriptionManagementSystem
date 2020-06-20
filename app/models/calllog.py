@@ -37,8 +37,28 @@ class CallLog(db.Document):
 
 
     @staticmethod
-    def get_logs(pageNum, itemsPerPage, projectId):
-        objects = CallLog.objects(Q(projectId=projectId)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+    def get_logs_overview(phone_nums, filter_obj, pageNum, itemsPerPage, projectId):
+        if not phone_nums and not filter_obj:
+            objects = CallLog.objects(Q(projectId=projectId)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+
+        elif phone_nums and not filter_obj:
+            objects = CallLog.objects(Q(projectId=projectId) & Q(_from__in=phone_nums)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+        
+        elif filter_obj and not phone_nums:
+            #timestamp
+            start = filter_obj.get('timestamp',{}).get('start', datetime.datetime(1970,1,1))
+            end = filter_obj.get('timestamp',{}).get('end', datetime.datetime.now())
+
+            objects = CallLog.objects(Q(projectId=projectId) & Q(timestamp__gte=start) & Q(timestamp__lte=end)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+
+        else:
+            #timestamp
+            start = filter_obj.get('timestamp',{}).get('start', datetime.datetime(1970,1,1))
+            end = filter_obj.get('timestamp',{}).get('end', datetime.datetime.now())
+
+            objects = CallLog.objects(Q(projectId=projectId) & Q(timestamp__gte=start) & Q(timestamp__lte=end) & Q(_from__in=phone_nums)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+
+        
         log_payload = []
 
         for log in objects:
@@ -62,7 +82,7 @@ class CallLog(db.Document):
         retObj = {}
         if resObj:
             retObj = {
-                '_id': resObj._id,
+                'id': resObj._id,
                 'timestamp': resObj.timestamp,
                 'from': resObj._from,
                 'to': resObj.to,
@@ -74,8 +94,26 @@ class CallLog(db.Document):
             return None 
 
     @staticmethod
-    def get_overview_total(prj_id):
-        return CallLog.objects(projectId=prj_id).count()
+    def get_overview_total(phone_nums, filter_obj, prj_id):
+        if not phone_nums and not filter_obj:
+            return CallLog.objects(Q(projectId=prj_id)).count()
+
+        if phone_nums and not filter_obj:
+            return CallLog.objects(Q(projectId=prj_id) & Q(_from__in=phone_nums)).count()
+        
+        elif filter_obj and not phone_nums:
+            #timestamp
+            start = filter_obj.get('timestamp',{}).get('start', datetime.datetime(1970,1,1))
+            end = filter_obj.get('timestamp',{}).get('end', datetime.datetime.now())
+
+            return CallLog.objects(Q(projectId=prj_id) & Q(timestamp__gte=start) & Q(timestamp__lte=end)).count()
+
+        else:
+            #timestamp
+            start = filter_obj.get('timestamp',{}).get('start', datetime.datetime(1970,1,1))
+            end = filter_obj.get('timestamp',{}).get('end', datetime.datetime.now())
+
+            return CallLog.objects(Q(projectId=prj_id) & Q(timestamp__gte=start) & Q(timestamp__lte=end) & Q(_from__in=phone_nums)).count()
  
 
     @staticmethod
@@ -86,7 +124,7 @@ class CallLog(db.Document):
         if resObj:
             for item in resObj:
                 retObj.append({
-                    '_id': item._id,
+                    'id': item._id,
                     'timestamp': item.timestamp,
                     'from': item._from,
                     'to': item.to,

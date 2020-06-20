@@ -30,7 +30,7 @@ def get(current_user, workspaceId, projectId):
     return response_with_obj("success", "Chat Log retrieved", chatLogObj, 200)
 
 
-@chatlog.route('/log/chat/overview', methods=['GET'])
+@chatlog.route('/log/chat/overview', methods=['POST'])
 @token_required
 @project_access_required
 def overview(current_user, workspaceId, projectId):
@@ -39,9 +39,10 @@ def overview(current_user, workspaceId, projectId):
     """
     pageNum = int(request.args.get('pageNum', 1))
     itemsPerPage = int(request.args.get('itemsPerPage', 25))
-    totalItems = ChatLog.get_overview_total(projectId)
+    filter_obj = request.json.get("filter", {})
+    totalItems = ChatLog.get_overview_total(projectId, filter_obj)
 
-    chatOverviewObj = ChatLog.get_log_overview(pageNum, itemsPerPage, projectId)
+    chatOverviewObj = ChatLog.get_log_overview(filter_obj, pageNum, itemsPerPage, projectId)
     displayName = {
                     "externalId": "User ID",
                     "lastMessage": "Last Message",
