@@ -20,8 +20,6 @@ class Service(db.Document):
     isRemoved = db.BooleanField(required=True, default=False)   
     removedOn = db.DateTimeField(default=None, null=True)
     createdOn = db.DateTimeField(default=None, null=True, required=True)
-    agentId = db.StringField(required=True)
-    responseTemplateId = db.StringField(required=True)
     serviceMeta = db.DictField(default={}, required=True)
 
     meta = {'collection': 'services', 'strict': False}

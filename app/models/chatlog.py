@@ -13,8 +13,8 @@ class ChatLog(db.Document):
     """
 
     _id = db.StringField(primary_key=True)
-    conversationId = db.StringField(required=True)
     channel = db.StringField(choices=('web', 'messenger', 'phone', 'whatsapp', 'wechat', 'line', 'telegram', 'kik', 'instagram'))
+    channelId = db.StringField(required=True)
     projectId = db.StringField(required=True)
     lastMessageTimestamp = db.DateTimeField(default=None, null=True)
     lastMessage = db.StringField(required=True)
