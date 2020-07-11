@@ -69,3 +69,6 @@ app.register_blueprint(chatlog)
 
 from app.calllog.routes import calllog
 app.register_blueprint(calllog)
+
+from app.playground.routes import playground
+app.register_blueprint(playground)
