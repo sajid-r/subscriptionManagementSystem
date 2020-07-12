@@ -17,6 +17,7 @@ class Bot(db.Document):
     createdOn = db.DateTimeField(default=None, null=True, required=True)
     isRemoved = db.BooleanField(required=True, default=False)   
     removedOn = db.DateTimeField(default=None, null=True)
+    isPublic = db.BooleanField(required=True, default=True)
     price = db.DecimalField(required=True)
     description = db.StringField()
     installations = db.IntField(default=0, required=True)
