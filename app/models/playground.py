@@ -25,7 +25,7 @@ class Playground(db.Document):
     publishedOn = db.DateTimeField(default=None, null=True)
     playgroundMeta = db.DictField(default={}, required=True)
 
-    meta = {'collection': 'playground', 'strict': False}
+    meta = {'collection': 'playgrounds', 'strict': False}
 
     def __init__(self, *args, **kwargs):
         super(Playground, self).__init__(*args, **kwargs)
