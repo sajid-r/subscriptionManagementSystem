@@ -24,6 +24,8 @@ class Playground(db.Document):
     isPublished = db.BooleanField(required=True, default=False)
     publishedOn = db.DateTimeField(default=None, null=True)
     playgroundMeta = db.DictField(default={}, required=True)
+    parentMarketplaceBot = db.StringField(required=True)
+    publishedServiceId = db.StringField(required=True, default=None)
 
     meta = {'collection': 'playgrounds', 'strict': False}
 
@@ -59,7 +61,16 @@ class Playground(db.Document):
         :param srv_id:
         :return: Playground or None
         """
-        return Playground.objects(projectId=prj_id, isRemoved=False, isPublished=False).all()
+        return Playground.objects(projectId=prj_id, isRemoved=False).all()
+
+    @staticmethod
+    def get_by_project_and_parent_bot(prj_id, parent_bot):
+        """
+        Get playgrounds for a project_id
+        :param srv_id:
+        :return: Playground or None
+        """
+        return Playground.objects(projectId=prj_id, isRemoved=False, parentMarketplaceBot=parent_bot).all()
 
     def remove(self):
         """
@@ -74,24 +85,34 @@ class Playground(db.Document):
         Publish Bot - Triggers Billing
         TODO
         """
-        self.isPublished = True
-        self.isRemoved = True
         self.publishedOn = util.get_current_time()
-        self.removedOn = util.get_current_time()
-        self.save()
 
-        ##Create a bot service
-        service = Service(serviceType='bot',
-                            serviceMeta=self.playgroundMeta, 
-                            projectId=projectId, 
-                            createdBy=current_user.email_id)
+        if not self.isPublished:
+            self.isPublished = True
+            ##Create a bot service
+            service = Service(serviceType='bot',
+                                serviceMeta=self.playgroundMeta, 
+                                projectId=projectId, 
+                                createdBy=current_user.email_id)
+            service.create()
 
-        service.create()
+            self.publishedServiceId = service._id
 
-        #add to project
-        project = Project.get_by_id(projectId)
-        project.services.append(service._id)
-        project.save()
+            #add to project
+            project = Project.get_by_id(projectId)
+            project.services.append(service._id)
+            project.save()
+        
+            self.save()
+
+        else:
+            #update service
+            service = Service.get_by_id(self.publishedServiceId)
+            service.serviceMeta = self.playgroundMeta
+            service.save()
+
+            self.save()
+
 
         return service._id
 

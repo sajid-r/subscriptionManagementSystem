@@ -62,6 +62,7 @@ def get(current_user, workspaceId, projectId):
     :return: Http Json response
     """
     playgroundId = request.args.get('playgroundId')
+    parentMarketplaceBot = request.args.get('parentMarketplaceBot')
     if playgroundId:
          #Get by Playground ID
         playground = Playground.get_by_id(playgroundId)
@@ -69,22 +70,63 @@ def get(current_user, workspaceId, projectId):
             return {
                 'playgroundType': playground.playgroundType,
                 'id': playground._id,
+                'projectId' : playground.projectId,
+                'createdOn' : playground.createdOn,
                 'createdBy': playground.createdBy,
+                'isRemoved' : playground.isRemoved,
+                'removedOn' : playground.removedOn,
+                'parentMarketplaceBot' : playground.parentMarketplaceBot,
+                'publishedServiceId' : playground.publishedServiceId,
                 'lastModified': playground.lastModified,
-                'playgroundMeta': playground.playgroundMeta
+                'playgroundMeta': playground.playgroundMeta,
+                'isPublished' : playground.isPublished,
+                'publishedOn' : playground.publishedOn
             }
         else:
             return response('failed', 'playground not found', 404)
+    elif parentMarketplaceBot:
+        print(parentMarketplaceBot)
+        #Get by Project ID & parentMarketplaceBot
+        playgrounds = Playground.get_by_project_and_parent_bot(projectId, parentMarketplaceBot)
+        payload = []
+        for playground in playgrounds:
+            payload.append({
+                'playgroundType': playground.playgroundType,
+                'id': playground._id,
+                'projectId' : playground.projectId,
+                'createdOn' : playground.createdOn,
+                'createdBy': playground.createdBy,
+                'isRemoved' : playground.isRemoved,
+                'removedOn' : playground.removedOn,
+                'parentMarketplaceBot' : playground.parentMarketplaceBot,
+                'publishedServiceId' : playground.publishedServiceId,
+                'lastModified': playground.lastModified,
+                'playgroundMeta': playground.playgroundMeta,
+                'isPublished' : playground.isPublished,
+                'publishedOn' : playground.publishedOn
+            })
+        
+        return {'playgrounds':payload} 
     else:
         #Get by Project ID
         playgrounds = Playground.get_by_project_id(projectId)
         payload = []
         for playground in playgrounds:
-            payload.append({"id": playground._id, 
-                            "playgroundType": playground.playgroundType,
-                            "createdBy":playground.createdBy,
-                            "lastModified": playground.lastModified,
-                            "playgroundMeta": playground.playgroundMeta})
+            payload.append({
+                'playgroundType': playground.playgroundType,
+                'id': playground._id,
+                'projectId' : playground.projectId,
+                'createdOn' : playground.createdOn,
+                'createdBy': playground.createdBy,
+                'isRemoved' : playground.isRemoved,
+                'removedOn' : playground.removedOn,
+                'parentMarketplaceBot' : playground.parentMarketplaceBot,
+                'publishedServiceId' : playground.publishedServiceId,
+                'lastModified': playground.lastModified,
+                'playgroundMeta': playground.playgroundMeta,
+                'isPublished' : playground.isPublished,
+                'publishedOn' : playground.publishedOn
+            })
         
         return {'playgrounds':payload} 
 
