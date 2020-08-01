@@ -37,7 +37,7 @@ class User(db.Document):
     isRemoved = db.BooleanField(default=False)                          #Has admin removed this account or person deletes own account
     removedOn = db.DateTimeField(default=None, null=True)               #When was the account removed
     isEmailVerified = db.BooleanField(default=False)                    #If email has been verified
-    # tokens = db.StringField(default=False)   #AccessTokens for console, fb messenger, etc
+    tokens = db.ListField(db.DictField(), default=[], required=True)   #AccessTokens for console, fb messenger, etc
 
     meta = {'collection': 'users', 'strict': False}
 
