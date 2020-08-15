@@ -72,3 +72,6 @@ app.register_blueprint(calllog)
 
 from app.playground.routes import playground
 app.register_blueprint(playground)
+
+from app.ticket.routes import ticket
+app.register_blueprint(ticket)
