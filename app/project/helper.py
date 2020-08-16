@@ -80,6 +80,13 @@ def response_with_id(status, message, prjid, status_code):
         'id': prjid
     })), status_code
 
+def response_with_obj(status, message, payload, status_code):
+    return make_response(jsonify({
+        'status': status,
+        'message': message,
+        'project': payload
+    })), status_code
+
 
 def response_auth(status, message, token, expiry, status_code=200):
     """

@@ -4,6 +4,7 @@ import jwt
 from app import helper as util
 import base64
 from itsdangerous import URLSafeTimedSerializer
+import pytz
 
 class Tokens(db.EmbeddedDocument):
 
@@ -33,6 +34,7 @@ class Project(db.Document):
     removedOn = db.DateTimeField(default=None, null=True)           #Has admin removed this account or person deletes own account
     createdOn = db.DateTimeField(default=None, null=True)
     services = db.ListField(db.StringField(), default=[])           #When was the account removed
+    timezone = db.StringField(required=True, default="UTC")
 
     meta = {'collection': 'projects', 'strict': False}
 
@@ -67,6 +69,16 @@ class Project(db.Document):
 
         print("Token generated", token)
         return token
+
+    def update_project(self, update_obj):
+        if 'name' in update_obj.keys():
+            self.name = update_obj['name']
+        if 'timezone' in update_obj.keys():
+            self.timezone = update_obj['timezone']
+        if 'isActive' in update_obj.keys():
+            self.isActive = update_obj['isActive']
+
+        self.save()
 
     def get_auth_token(self):
         """
@@ -134,6 +146,11 @@ class Project(db.Document):
         self.isRemoved = True
         self.removedOn = util.get_current_time()
 
+    @staticmethod
+    def get_timezones():
+        tz_list = pytz.all_timezones
+        return tz_list
+
 class BlackListToken(db.Document):
     """
     Document to store blacklisted/invalid auth tokens
@@ -168,4 +185,3 @@ class BlackListToken(db.Document):
         if response:
             return True
         return False
-
