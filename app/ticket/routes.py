@@ -186,3 +186,14 @@ def remove(current_user, workspaceId, projectId):
 
     else:
         return response('failed', 'Content-type must be json', 402)
+
+@ticket.route('/ticket/categories', methods=['GET'])
+@token_required
+@project_access_required
+def get_categories(current_user, workspaceId, projectId):
+    """
+        Get all Categories in Tickets
+    """
+    categories = Ticket.get_categories(projectId)
+    
+    return {"categories":categories}

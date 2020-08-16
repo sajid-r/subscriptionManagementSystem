@@ -22,7 +22,7 @@ class Ticket(db.Document):
     channel = db.StringField(choices=('web', 'messenger', 'phone', 'whatsapp', 'wechat', 'line', 'telegram', 'kik', 'instagram'))
     projectId = db.StringField(required=True)
     category = db.StringField(required=True)
-    status = db.StringField(choices=('open', 'closed', 'pending'))
+    status = db.StringField(choices=('Open', 'Closed', 'In Progress'))
     lastModified = db.DateTimeField(default=None, null=True)
     modifiedBy = db.StringField(default="")
     createdOn = db.DateTimeField(default=None, null=True)
@@ -83,7 +83,7 @@ class Ticket(db.Document):
             start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
             end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
 
-            status = filter_obj.get('status',['open', 'closed', 'pending'])
+            status = filter_obj.get('status',['Open', 'Closed', 'In Progress'])
             category = filter_obj.get('category', [])
 
             #channels
@@ -101,7 +101,7 @@ class Ticket(db.Document):
             start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
             end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
 
-            status = filter_obj.get('status',['open', 'closed', 'pending'])
+            status = filter_obj.get('status',['Open', 'Closed', 'In Progress'])
             category = filter_obj.get('category', [])
 
             #channels
@@ -142,6 +142,15 @@ class Ticket(db.Document):
         return Ticket.objects(_id=ticket_id).first()
 
     @staticmethod
+    def get_categories(prj_id):
+        """
+        Get all categories
+        :param prj_id:
+        :return: List of all categories
+        """
+        return Ticket.objects(projectId=prj_id).distinct(field="category")
+
+    @staticmethod
     def get_total(projectId, query="", filter_obj={}):
         """
         Get total records
@@ -158,7 +167,7 @@ class Ticket(db.Document):
                 start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
                 end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
 
-                status = filter_obj.get('status',['open', 'closed', 'pending'])
+                status = filter_obj.get('status',['Open', 'Closed', 'In Progress'])
                 category = filter_obj.get('category', [])
 
                 #channels
@@ -178,7 +187,7 @@ class Ticket(db.Document):
                 start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
                 end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
 
-                status = filter_obj.get('status',['open', 'closed', 'pending'])
+                status = filter_obj.get('status',['Open', 'Closed', 'In Progress'])
                 category = filter_obj.get('category', [])
 
                 #channels
