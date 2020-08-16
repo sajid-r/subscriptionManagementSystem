@@ -11,5 +11,5 @@ def response_with_obj(status, message, ticket_obj, status_code):
     return make_response(jsonify({
         'status': status,
         'message': message,
-        'ticket': app_obj
+        'ticket': ticket_obj
     })), status_code

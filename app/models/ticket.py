@@ -21,7 +21,7 @@ class Ticket(db.Document):
     email = db.StringField(default="")
     channel = db.StringField(choices=('web', 'messenger', 'phone', 'whatsapp', 'wechat', 'line', 'telegram', 'kik', 'instagram'))
     projectId = db.StringField(required=True)
-    category = db.ListField()
+    category = db.StringField(required=True)
     status = db.StringField(choices=('open', 'closed', 'pending'))
     lastModified = db.DateTimeField(default=None, null=True)
     modifiedBy = db.StringField(default="")
@@ -83,24 +83,36 @@ class Ticket(db.Document):
             start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
             end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
 
+            status = filter_obj.get('status',['open', 'closed', 'pending'])
+            category = filter_obj.get('category', [])
+
             #channels
             channels = filter_obj.get('channels', [])
             if channels == []:
                 channels = ['web', 'messenger', 'phone', 'whatsapp', 'wechat', 'line', 'telegram', 'kik', 'instagram']
 
-            objects = Ticket.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+            if category:
+                objects = Ticket.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels) & Q(status__in=status) & Q(category__in=category)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+            else:
+                objects = Ticket.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels) & Q(status__in=status)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
 
         else:
             #createdOn
             start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
             end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
 
+            status = filter_obj.get('status',['open', 'closed', 'pending'])
+            category = filter_obj.get('category', [])
+
             #channels
             channels = filter_obj.get('channels', [])
             if channels == []:
                 channels = ['web', 'messenger', 'phone', 'whatsapp', 'wechat', 'line', 'telegram', 'kik', 'instagram']
 
-            objects = Ticket.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels) & (Q(firstName__icontains=regex) | Q(email__icontains=regex))).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+            if category:
+                objects = Ticket.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels) & (Q(firstName__icontains=regex) | Q(email__icontains=regex)) & Q(status__in=status) & Q(category__in=category)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+            else:
+                objects = Ticket.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels) & (Q(firstName__icontains=regex) | Q(email__icontains=regex)) & Q(status__in=status)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
 
 
         for ticket in objects:
@@ -146,24 +158,40 @@ class Ticket(db.Document):
                 start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
                 end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
 
+                status = filter_obj.get('status',['open', 'closed', 'pending'])
+                category = filter_obj.get('category', [])
+
                 #channels
                 channels = filter_obj.get('channels', [])
                 if channels == []:
                     channels = ['web', 'messenger', 'phone', 'whatsapp', 'wechat', 'line', 'telegram', 'kik', 'instagram']
 
-                return Ticket.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels)).count()
+                if category:
+                    return Ticket.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels) & Q(status__in=status) & Q(category__in=category)).count()
+                else:
+                    return Ticket.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels) & Q(status__in=status)).count()
+
+                # return Ticket.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels)).count()
 
             else:
                 #createdOn
                 start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
                 end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
 
+                status = filter_obj.get('status',['open', 'closed', 'pending'])
+                category = filter_obj.get('category', [])
+
                 #channels
                 channels = filter_obj.get('channels', [])
                 if channels == []:
                     channels = ['web', 'messenger', 'phone', 'whatsapp', 'wechat', 'line', 'telegram', 'kik', 'instagram']
 
-                return Ticket.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels) & (Q(firstName__icontains=regex) | Q(email__icontains=regex))).count()
+                if category:
+                    return Ticket.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels) & (Q(firstName__icontains=regex) | Q(email__icontains=regex)) & Q(status__in=status) & Q(category__in=category)).count()
+                else:
+                    return Ticket.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels) & (Q(firstName__icontains=regex) | Q(email__icontains=regex)) & Q(status__in=status)).count()
+                
+                # return Ticket.objects(Q(projectId=projectId) & Q(isDeleted=False) & Q(createdOn__gte=start) & Q(createdOn__lte=end) & Q(channel__in=channels) & (Q(firstName__icontains=regex) | Q(email__icontains=regex))).count()
         else:
             return Ticket.objects(projectId=projectId).count()
 

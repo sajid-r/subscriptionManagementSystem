@@ -38,7 +38,7 @@ def messenger_get_page_access_token(user_token):
             payload.append({
                 'page_name': page_name,
                 "page_id": page_id,
-                "access_toke": access_token
+                "access_token": access_token
             })
 
     return payload

@@ -134,7 +134,7 @@ def update(current_user, workspaceId, projectId):
         else:
             ticket = Ticket.get_by_id(post_data.get('id'))
             if ticket:
-                ticket.update_ticket(post_data)
+                ticket.update_ticket(post_data, current_user)
                 res_payload = {
                     'id':ticket._id,
                     'firstName': ticket.firstName,
