@@ -83,7 +83,10 @@ class Ticket(db.Document):
             start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
             end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
 
-            status = filter_obj.get('status',['Open', 'Closed', 'In Progress'])
+            status = filter_obj.get('status',['open', 'closed', 'in progress'])
+            if status == []:
+                status = ['open', 'closed', 'in progress']
+
             category = filter_obj.get('category', [])
 
             #channels
@@ -101,7 +104,9 @@ class Ticket(db.Document):
             start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
             end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
 
-            status = filter_obj.get('status',['Open', 'Closed', 'In Progress'])
+            status = filter_obj.get('status',['open', 'closed', 'in progress'])
+            if status == []:
+                status = ['open', 'closed', 'in progress']
             category = filter_obj.get('category', [])
 
             #channels
@@ -167,7 +172,9 @@ class Ticket(db.Document):
                 start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
                 end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
 
-                status = filter_obj.get('status',['Open', 'Closed', 'In Progress'])
+                status = filter_obj.get('status',['open', 'closed', 'in progress'])
+                if status == []:
+                    status = ['open', 'closed', 'in progress']
                 category = filter_obj.get('category', [])
 
                 #channels
@@ -187,7 +194,9 @@ class Ticket(db.Document):
                 start = filter_obj.get('createdOn',{}).get('start', datetime.datetime(1970,1,1))
                 end = filter_obj.get('createdOn',{}).get('end', datetime.datetime.now())
 
-                status = filter_obj.get('status',['Open', 'Closed', 'In Progress'])
+                status = filter_obj.get('status',['open', 'closed', 'in progress'])
+                if status == []:
+                    status = ['open', 'closed', 'in progress']
                 category = filter_obj.get('category', [])
 
                 #channels
