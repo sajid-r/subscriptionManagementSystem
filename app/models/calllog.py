@@ -18,7 +18,7 @@ class CallLog(db.Document):
     _from = db.StringField(required=True)
     to = db.StringField(required=True)
     duration = db.IntField(required=True)
-    recordingLink = db.StringField(default="")
+    callMeta = db.DictField(default={})
     
     meta = {'db_alias': 'fulfillment', 'collection': 'call-logs', 'strict': False}
 
