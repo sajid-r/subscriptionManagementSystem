@@ -25,22 +25,21 @@ def get(current_user, workspaceId, projectId):
     
     tickets_list = Ticket.get_tickets(pageNum, itemsPerPage, projectId)
     totalItems = Ticket.get_total(projectId)
-    # displayName = {
-    #                 "id": "ID",
-    #                 "name": "Name",
-    #                 "sex": "Sex",
-    #                 "age": "Age",
-    #                 "phone": "Phone",
-    #                 "email": "Email",
-    #                 "address": "Address",
-    #                 "city": "City",
-    #                 "country": "Country",
-    #                 "channel": "Channel",
-    #                 "createdOn": "Created On"
-    #             }
+    displayName = {
+                    "id": "ID",
+                    "status": "Status",
+                    "category": "Category",
+                    "channel": "Channel",
+                    "name": "Name",
+                    "phone": "Phone",
+                    "email": "Email",
+                    "modifiedBy": "Modified By",
+                    "createdOn": "Created On",
+                    "lastModified": "Last Modified",                    
+                }
     
-    # return {"tickets":tickets_list, "displayName":json.dumps(displayName), "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
-    return {"tickets":tickets_list, "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
+    return {"tickets":tickets_list, "displayName":json.dumps(displayName), "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
+    # return {"tickets":tickets_list, "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
 
 
 @ticket.route('/ticket/search', methods=['POST'])
@@ -59,22 +58,22 @@ def search(current_user, workspaceId, projectId):
     
     tickets_list = Ticket.search_tickets(query, filter_obj, pageNum, itemsPerPage, projectId)
     totalItems = Ticket.get_total(projectId, query=query, filter_obj=filter_obj)
-    # displayName = {
-    #                 "id": "ID",
-    #                 "name": "Name",
-    #                 "sex": "Sex",
-    #                 "age": "Age",
-    #                 "phone": "Phone",
-    #                 "email": "Email",
-    #                 "address": "Address",
-    #                 "city": "City",
-    #                 "country": "Country",
-    #                 "channel": "Channel",
-    #                 "createdOn": "Created On"
-    #             }
+    displayName = {
+                    "id": "ID",
+                    "name": "Name",
+                    "sex": "Sex",
+                    "age": "Age",
+                    "phone": "Phone",
+                    "email": "Email",
+                    "address": "Address",
+                    "city": "City",
+                    "country": "Country",
+                    "channel": "Channel",
+                    "createdOn": "Created On"
+                }
     
-    # return {"tickets":tickets_list, "displayName":json.dumps(displayName), "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
-    return {"tickets":tickets_list, "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
+    return {"tickets":tickets_list, "displayName":json.dumps(displayName), "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
+    # return {"tickets":tickets_list, "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
 
 
 @ticket.route('/ticket/add', methods=['POST'])
