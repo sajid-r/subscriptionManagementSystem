@@ -64,7 +64,7 @@ class Lead(db.Document):
                 completeName=lead.lastName
             lead_payload.append({
                 'id':lead._id,
-                'name': lead.firstName + " " + lead.lastName,
+                'name': completeName,
                 'country': lead.country,
                 'address': lead.address,
                 'age': lead.age,
