@@ -67,8 +67,7 @@ class CallLog(db.Document):
                 'timestamp': log.timestamp,
                 'from': log._from,
                 'to': log.to,
-                'duration': log.duration,
-                'recordingLink': log.recordingLink
+                'duration': log.duration
             })
 
         return log_payload
@@ -87,8 +86,7 @@ class CallLog(db.Document):
                 'timestamp': resObj.timestamp,
                 'from': resObj._from,
                 'to': resObj.to,
-                'duration': resObj.duration,
-                'recordingLink': resObj.recordingLink
+                'duration': resObj.duration
             }
             return retObj
         else:
@@ -129,8 +127,7 @@ class CallLog(db.Document):
                     'timestamp': item.timestamp,
                     'from': item._from,
                     'to': item.to,
-                    'duration': item.duration,
-                    'recordingLink': item.recordingLink
+                    'duration': item.duration
                 })
             return retObj
         else:
