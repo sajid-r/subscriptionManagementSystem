@@ -39,24 +39,24 @@ class CallLog(db.Document):
     @staticmethod
     def get_logs_overview(phone_nums, filter_obj, pageNum, itemsPerPage, projectId):
         if not phone_nums and not filter_obj:
-            objects = CallLog.objects(Q(projectId=projectId)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+            objects = CallLog.objects(Q(projectId=projectId)).order_by('-timestamp').skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
 
         elif phone_nums and not filter_obj:
-            objects = CallLog.objects(Q(projectId=projectId) & Q(_from__in=phone_nums)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+            objects = CallLog.objects(Q(projectId=projectId) & Q(_from__in=phone_nums)).order_by('-timestamp').skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
         
         elif filter_obj and not phone_nums:
             #timestamp
             start = filter_obj.get('timestamp',{}).get('start', datetime.datetime(1970,1,1))
             end = filter_obj.get('timestamp',{}).get('end', datetime.datetime.now())
 
-            objects = CallLog.objects(Q(projectId=projectId) & Q(timestamp__gte=start) & Q(timestamp__lte=end)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+            objects = CallLog.objects(Q(projectId=projectId) & Q(timestamp__gte=start) & Q(timestamp__lte=end)).skip((pageNum-1)*itemsPerPage).order_by('-timestamp').limit(itemsPerPage).all()
 
         else:
             #timestamp
             start = filter_obj.get('timestamp',{}).get('start', datetime.datetime(1970,1,1))
             end = filter_obj.get('timestamp',{}).get('end', datetime.datetime.now())
 
-            objects = CallLog.objects(Q(projectId=projectId) & Q(timestamp__gte=start) & Q(timestamp__lte=end) & Q(_from__in=phone_nums)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
+            objects = CallLog.objects(Q(projectId=projectId) & Q(timestamp__gte=start) & Q(timestamp__lte=end) & Q(_from__in=phone_nums)).order_by('-timestamp').skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).all()
 
         
         log_payload = []
@@ -95,29 +95,29 @@ class CallLog(db.Document):
     @staticmethod
     def get_overview_total(phone_nums, filter_obj, prj_id):
         if not phone_nums and not filter_obj:
-            return CallLog.objects(Q(projectId=prj_id)).count()
+            return CallLog.objects(Q(projectId=prj_id)).order_by('-timestamp').count()
 
         if phone_nums and not filter_obj:
-            return CallLog.objects(Q(projectId=prj_id) & Q(_from__in=phone_nums)).count()
+            return CallLog.objects(Q(projectId=prj_id) & Q(_from__in=phone_nums)).order_by('-timestamp').count()
         
         elif filter_obj and not phone_nums:
             #timestamp
             start = filter_obj.get('timestamp',{}).get('start', datetime.datetime(1970,1,1))
             end = filter_obj.get('timestamp',{}).get('end', datetime.datetime.now())
 
-            return CallLog.objects(Q(projectId=prj_id) & Q(timestamp__gte=start) & Q(timestamp__lte=end)).count()
+            return CallLog.objects(Q(projectId=prj_id) & Q(timestamp__gte=start) & Q(timestamp__lte=end)).order_by('-timestamp').count()
 
         else:
             #timestamp
             start = filter_obj.get('timestamp',{}).get('start', datetime.datetime(1970,1,1))
             end = filter_obj.get('timestamp',{}).get('end', datetime.datetime.now())
 
-            return CallLog.objects(Q(projectId=prj_id) & Q(timestamp__gte=start) & Q(timestamp__lte=end) & Q(_from__in=phone_nums)).count()
+            return CallLog.objects(Q(projectId=prj_id) & Q(timestamp__gte=start) & Q(timestamp__lte=end) & Q(_from__in=phone_nums)).order_by('-timestamp').count()
  
 
     @staticmethod
     def get_log_search_by_phone(phone_nums, projectId):
-        resObj = CallLog.objects(Q(projectId=projectId) & Q(_from__in=phone_nums)).order_by('-timestamp').all()
+        resObj = CallLog.objects(Q(projectId=projectId) & Q(_from__in=phone_nums)).order_by('-timestamp').order_by('-timestamp').all()
         retObj = []
 
         if resObj:
