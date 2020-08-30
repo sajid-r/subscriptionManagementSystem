@@ -60,16 +60,15 @@ def search(current_user, workspaceId, projectId):
     totalItems = Ticket.get_total(projectId, query=query, filter_obj=filter_obj)
     displayName = {
                     "id": "ID",
+                    "status": "Status",
+                    "category": "Category",
+                    "channel": "Channel",
                     "name": "Name",
-                    "sex": "Sex",
-                    "age": "Age",
                     "phone": "Phone",
                     "email": "Email",
-                    "address": "Address",
-                    "city": "City",
-                    "country": "Country",
-                    "channel": "Channel",
-                    "createdOn": "Created On"
+                    "modifiedBy": "Modified By",
+                    "createdOn": "Created On",
+                    "lastModified": "Last Modified",                    
                 }
     
     return {"tickets":tickets_list, "displayName":json.dumps(displayName), "pageNum": pageNum, "totalPages": math.ceil(totalItems/itemsPerPage), "totalEntries": totalItems}
