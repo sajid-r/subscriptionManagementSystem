@@ -57,6 +57,11 @@ class Lead(db.Document):
         lead_payload = []
 
         for lead in objects:
+            completeName = ""
+            if lead.firstName:
+                completeName+=(lead.firstName+" ")
+            if lead.lastName:
+                completeName=lead.lastName
             lead_payload.append({
                 'id':lead._id,
                 'name': lead.firstName + " " + lead.lastName,
