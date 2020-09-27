@@ -26,6 +26,7 @@ def get(current_user, workspaceId, projectId):
         for bot in bots:
             payload.append({
                 'id': bot._id,
+                'name': bot.name,
                 'description': bot.description,
                 'price' : float(bot.price),
                 'marketplaceCardMediaUrl' : bot.marketplaceCardMediaUrl

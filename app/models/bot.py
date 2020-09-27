@@ -26,6 +26,7 @@ class Bot(db.Document):
     overviewRichText = db.StringField()
     marketplaceCardMediaUrl = db.StringField()
     tags = db.ListField()
+    name = db.StringField()
     botMeta = db.DictField(default={}, required=True)
 
     meta = {'collection': 'bots', 'strict': False}
@@ -65,9 +66,9 @@ class Bot(db.Document):
     @staticmethod
     def get_catalog(filterObj):
         if filterObj:
-            return Bot.objects(Q(isPublic=True) & Q(isRemoved=False) & Q(tags__contains=filterObj)).only('_id', 'description', 'price', 'marketplaceCardMediaUrl').all()
+            return Bot.objects(Q(isPublic=True) & Q(isRemoved=False) & Q(tags__contains=filterObj)).only('_id', 'description', 'price', 'marketplaceCardMediaUrl', 'name').all()
         else:
-            return Bot.objects(Q(isPublic=True) & Q(isRemoved=False)).only('_id', 'description', 'price', 'marketplaceCardMediaUrl').all()
+            return Bot.objects(Q(isPublic=True) & Q(isRemoved=False)).only('_id', 'description', 'price', 'marketplaceCardMediaUrl', 'name').all()
 
     @staticmethod
     def get_tags(filterObj):
