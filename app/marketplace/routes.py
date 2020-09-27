@@ -53,3 +53,22 @@ def get_tags(current_user, workspaceId, projectId):
         'message': "Got the tags",
         'tags': tags
     })), 200
+
+
+@marketplace.route('/marketplace/bot', methods=['GET'])
+@token_required
+@project_access_required
+def get_bot(current_user, workspaceId, projectId):
+    """
+    Get list of all tags
+    """
+
+    botId = request.args.get("id")
+    botObj = Bot.get_by_id_no_template(botId)
+    payload = []
+    
+    return make_response(jsonify({
+        'status': "success",
+        'message': "Retrieved Bot Object",
+        'bot': botObj
+    })), 200

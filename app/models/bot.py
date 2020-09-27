@@ -55,6 +55,15 @@ class Bot(db.Document):
         """
         return Bot.objects(_id=bot_id).first()
 
+    @staticmethod
+    def get_by_id_no_template(bot_id):
+        """
+        Filter a playground by Id.
+        :param srv_id:
+        :return: Bot or None
+        """
+        return Bot.objects(_id=bot_id).exclude("botMeta.template").first()
+
     def remove(self):
         """
         Soft deletes the user
