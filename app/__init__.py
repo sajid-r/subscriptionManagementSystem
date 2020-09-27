@@ -75,3 +75,6 @@ app.register_blueprint(playground)
 
 from app.ticket.routes import ticket
 app.register_blueprint(ticket)
+
+from app.marketplace.routes import marketplace
+app.register_blueprint(marketplace)

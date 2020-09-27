@@ -7,6 +7,7 @@ from itsdangerous import URLSafeTimedSerializer
 from app.service.services_available import services_available
 from app.models.service import Service
 from app.models.project import Project
+from mongoengine.queryset.visitor import Q
 
 class Bot(db.Document):
     """
@@ -21,6 +22,10 @@ class Bot(db.Document):
     price = db.DecimalField(required=True)
     description = db.StringField()
     installations = db.IntField(default=0, required=True)
+    overviewMediaUrl = db.StringField()
+    overviewRichText = db.StringField()
+    marketplaceCardMediaUrl = db.StringField()
+    tags = db.ListField()
     botMeta = db.DictField(default={}, required=True)
 
     meta = {'collection': 'bots', 'strict': False}
@@ -56,3 +61,19 @@ class Bot(db.Document):
         self.isRemoved = True
         self.removedOn = util.get_current_time()
         self.save()
+
+    @staticmethod
+    def get_catalog(filterObj):
+        if filterObj:
+            return Bot.objects(Q(isPublic=True) & Q(isRemoved=False) & Q(tags__contains=filterObj)).only('_id', 'description', 'price', 'marketplaceCardMediaUrl').all()
+        else:
+            return Bot.objects(Q(isPublic=True) & Q(isRemoved=False)).only('_id', 'description', 'price', 'marketplaceCardMediaUrl').all()
+
+    @staticmethod
+    def get_tags(filterObj):
+        res = Bot.objects(Q(isPublic=True) & Q(isRemoved=False)).only('tags').all()
+        payload = []
+        for item in res:
+            payload.extend(item.tags)
+
+        return payload
