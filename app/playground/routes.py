@@ -185,3 +185,31 @@ def update(current_user, workspaceId, projectId):
             return response('failed', 'Playground ID is required in the request payload.', 402)
     else:
         return response('failed', 'Content-type must be json', 402)    
+
+
+@playground.route('/playground/delete', methods=['POST'])
+@token_required
+@project_access_required
+def delete(current_user, workspaceId, projectId):
+    """
+    Delete a playground if playground is unpublished else does nothing
+    Playground ID Is mandatory
+    :return: Http Json response
+    """
+    if request.content_type == 'application/json':
+        playgroundId = request.get_json(force=True).get('playgroundId')
+        if playgroundId:
+            playground = Playground.get_by_id(playgroundId)
+            if playground:
+                if playground.isPublished:
+                    response('failed', 'Cannot delete a playground that has been published', 400)
+                else:
+                    playground.isRemoved = True
+                    playground.save()
+                    return response('success', 'Playground deleted.', 200)
+            else:
+                return response('failed', 'playground not found', 404)
+        else:
+            return response('failed', 'Playground ID is required in the request payload.', 402)
+    else:
+        return response('failed', 'Content-type must be json', 402)   
