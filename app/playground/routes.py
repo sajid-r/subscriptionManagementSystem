@@ -141,10 +141,11 @@ def publish(current_user, workspaceId, projectId):
     """
     if request.content_type == 'application/json':
         playgroundId = request.get_json(force=True).get('playgroundId')
+        priceContract = request.get_json(force=True).get('priceContract')
         if playgroundId:
             playground = Playground.get_by_id(playgroundId)
             if playground:
-                srv_id = playground.publish(projectId, current_user)
+                srv_id = playground.publish(projectId, current_user, priceContract)
                 return response('success', srv_id, 200)
             else:
                 return response('failed', 'playground not found', 404)

@@ -80,7 +80,7 @@ class Playground(db.Document):
         self.removedOn = util.get_current_time()
         self.save()
 
-    def publish(self, projectId, current_user):
+    def publish(self, projectId, current_user, priceContract):
         """
         Publish Bot - Triggers Billing
         TODO
@@ -90,8 +90,10 @@ class Playground(db.Document):
         if not self.isPublished:
             self.isPublished = True
             ##Create a bot service
+            serviceMeta = self.playgroundMeta
+            serviceMeta["priceContract"] = priceContract
             service = Service(serviceType='bot',
-                                serviceMeta=self.playgroundMeta, 
+                                serviceMeta=serviceMeta, 
                                 projectId=projectId, 
                                 createdBy=current_user.email_id)
             service.create()
