@@ -72,6 +72,15 @@ class Playground(db.Document):
         """
         return Playground.objects(projectId=prj_id, isRemoved=False, parentMarketplaceBot=parent_bot).all()
 
+    @staticmethod
+    def get_by_project_and_published_service(prj_id, published_service_id):
+        """
+        Get playgrounds for a project_id and a published service id
+        :param srv_id:
+        :return: Playground or None
+        """
+        return Playground.objects(projectId=prj_id, isRemoved=False, publishedServiceId=published_service_id).all()
+
     def remove(self):
         """
         Soft deletes the user

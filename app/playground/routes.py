@@ -63,6 +63,7 @@ def get(current_user, workspaceId, projectId):
     """
     playgroundId = request.args.get('playgroundId')
     parentMarketplaceBot = request.args.get('parentMarketplaceBot')
+    publishedServiceId = request.args.get('publishedServiceId')
     if playgroundId:
          #Get by Playground ID
         playground = Playground.get_by_id(playgroundId)
@@ -106,7 +107,28 @@ def get(current_user, workspaceId, projectId):
                 'publishedOn' : playground.publishedOn
             })
         
-        return {'playgrounds':payload} 
+        return {'playgrounds':payload}
+    elif publishedServiceId:
+        plagrounds = Playground.get_by_project_and_published_service(projectId, publishedServiceId)
+        payload = []
+        for playground in playgrounds:
+            payload.append({
+                'playgroundType': playground.playgroundType,
+                'id': playground._id,
+                'projectId' : playground.projectId,
+                'createdOn' : playground.createdOn,
+                'createdBy': playground.createdBy,
+                'isRemoved' : playground.isRemoved,
+                'removedOn' : playground.removedOn,
+                'parentMarketplaceBot' : playground.parentMarketplaceBot,
+                'publishedServiceId' : playground.publishedServiceId,
+                'lastModified': playground.lastModified,
+                'playgroundMeta': playground.playgroundMeta,
+                'isPublished' : playground.isPublished,
+                'publishedOn' : playground.publishedOn
+            })
+        
+        return {'playgrounds':payload}
     else:
         #Get by Project ID
         playgrounds = Playground.get_by_project_id(projectId)
