@@ -29,6 +29,7 @@ def get(current_user, workspaceId, projectId):
                 'name': bot.name,
                 'description': bot.description,
                 'price' : float(bot.price),
+                'tags' : bot.tags,
                 'marketplaceCardMediaUrl' : bot.marketplaceCardMediaUrl
             })
             print(payload)

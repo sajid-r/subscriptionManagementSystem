@@ -75,9 +75,9 @@ class Bot(db.Document):
     @staticmethod
     def get_catalog(filterObj):
         if filterObj:
-            return Bot.objects(Q(isPublic=True) & Q(isRemoved=False) & Q(tags__contains=filterObj)).only('_id', 'description', 'price', 'marketplaceCardMediaUrl', 'name').all()
+            return Bot.objects(Q(isPublic=True) & Q(isRemoved=False) & Q(tags__contains=filterObj)).only('_id', 'description', 'price', 'marketplaceCardMediaUrl', 'name', 'tags').all()
         else:
-            return Bot.objects(Q(isPublic=True) & Q(isRemoved=False)).only('_id', 'description', 'price', 'marketplaceCardMediaUrl', 'name').all()
+            return Bot.objects(Q(isPublic=True) & Q(isRemoved=False)).only('_id', 'description', 'price', 'marketplaceCardMediaUrl', 'name', 'tags').all()
 
     @staticmethod
     def get_tags(filterObj):
