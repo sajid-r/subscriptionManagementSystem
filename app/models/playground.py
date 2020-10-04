@@ -110,7 +110,10 @@ class Playground(db.Document):
         else:
             #update service
             service = Service.get_by_id(self.publishedServiceId)
-            service.serviceMeta = self.playgroundMeta
+            servicePriceContract = service.serviceMeta.get("priceContract", {}) #get exisitng price contract
+            serviceMeta = self.playgroundMeta #copy new playground meta
+            serviceMeta["priceContract"] = servicePriceContract #add priceContract to service Meta
+            service.serviceMeta = serviceMeta #set new service meta
             service.save()
 
             self.save()
