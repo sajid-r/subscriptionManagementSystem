@@ -198,45 +198,54 @@ def messenger_integration(current_user, workspaceId, projectId):
         #check if integrations already exist for the facebook page
         existingIntegrations = Service.objects(__raw__={
                                                         'serviceMeta.channelId': str(page_id), 
-                                                        'serviceMeta.channel': 'messenger'
+                                                        'serviceMeta.channel': 'messenger',
+                                                        'isRemoved': False
                                                         }).count()
         #if integrations exist, disable them
         print("existingIntegrations", existingIntegrations)
         if existingIntegrations:
-            services = Service.objects(__raw__={
+            service = Service.objects(__raw__={
                                                 'serviceMeta.channelId': str(page_id), 
-                                                'serviceMeta.channel': 'messenger'
-                                                }).all()
-            for item in services:
-                item.isActive = False
-                item.save()
+                                                'serviceMeta.channel': 'messenger',
+                                                'isRemoved' : False
+                                                }).first()
+            service.isActive = True
+            service.save()
 
-        #create new service
-        service = Service(  serviceType='textChannel',
-                            serviceMeta={
-                                'channel': 'messenger',
-                                'channelId': page_id,
-                                'channelName': page_name,
-                                'parentBot': bot_id,
-                                'accessToken': page_token,
-                                'languageCode': language_code
-                            }, 
-                            projectId=projectId, 
-                            createdBy=current_user.email_id)
+            #Replcing _id with id
+            service_obj = json.loads(service.to_json())
+            service_obj['id'] = service_obj['_id']
+            service_obj.pop('_id', None)
 
-        service.create()
-                
-        #add to project
-        project = Project.get_by_id(projectId)
-        project.services.append(service._id)
-        project.save()
+            return response_with_obj('success', 'Existing service activated successfully', service_obj, 200)
 
-        #Replcing _id with id
-        service_obj = json.loads(service.to_json())
-        service_obj['id'] = service_obj['_id']
-        service_obj.pop('_id', None)
-        
-        return response_with_obj('success', 'Service created successfully', service_obj, 200)
+        else:
+            #create new service
+            service = Service(  serviceType='textChannel',
+                                serviceMeta={
+                                    'channel': 'messenger',
+                                    'channelId': page_id,
+                                    'channelName': page_name,
+                                    'parentBot': bot_id,
+                                    'accessToken': page_token,
+                                    'languageCode': language_code
+                                }, 
+                                projectId=projectId, 
+                                createdBy=current_user.email_id)
+
+            service.create()
+                    
+            #add to project
+            project = Project.get_by_id(projectId)
+            project.services.append(service._id)
+            project.save()
+
+            #Replcing _id with id
+            service_obj = json.loads(service.to_json())
+            service_obj['id'] = service_obj['_id']
+            service_obj.pop('_id', None)
+            
+            return response_with_obj('success', 'Service created successfully', service_obj, 200)
 
     else:
         return response('failed', 'Required data not found in POST body.', 402)
