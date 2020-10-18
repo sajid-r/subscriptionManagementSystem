@@ -224,7 +224,7 @@ def delete(current_user, workspaceId, projectId):
             playground = Playground.get_by_id(playgroundId)
             if playground:
                 if playground.isPublished:
-                    response('failed', 'Cannot delete a playground that has been published', 400)
+                    return response('failed', 'Cannot delete a playground that has been published', 400)
                 else:
                     playground.isRemoved = True
                     playground.save()
