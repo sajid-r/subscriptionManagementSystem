@@ -174,7 +174,32 @@ def publish(current_user, workspaceId, projectId):
         else:
             return response('failed', 'Playground ID is required in the request payload.', 402)
     else:
-        return response('failed', 'Content-type must be json', 402)    
+        return response('failed', 'Content-type must be json', 402)
+
+@playground.route('/playground/reset', methods=['POST'])
+@token_required
+@project_access_required
+def reset(current_user, workspaceId, projectId):
+    """
+    Publish a playground
+    Playground ID Is mandatory
+    :return: Http Json response
+    """
+    if request.content_type == 'application/json':
+        playgroundId = request.get_json(force=True).get('playgroundId')
+        if playgroundId:
+            playground = Playground.get_by_id(playgroundId)
+            if playground:
+                bot = Bot.get_by_id(playground.parentMarketplaceBot)
+                playground.playgroundMeta=bot.botMeta
+                playground.save()
+                return response('success', 'playground reset successful', 200)
+            else:
+                return response('failed', 'playground not found', 404)
+        else:
+            return response('failed', 'Playground ID is required in the request payload.', 402)
+    else:
+        return response('failed', 'Content-type must be json', 402)     
 
 
 @playground.route('/playground/update', methods=['POST'])
