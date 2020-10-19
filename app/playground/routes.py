@@ -24,13 +24,17 @@ def create(current_user, workspaceId, projectId):
     """
     if request.content_type == 'application/json':
         post_data = request.get_json(force=True)
-        required_keys = ['botId']
+        required_keys = ['botId', 'name']
         if all(name in post_data for name in required_keys):
             bot = Bot.get_by_id(post_data.get('botId')) #bot id is fronteous generated. bot is is for a specific version of agent from dialogflow
             if not bot:
                 return response('failed', 'Bot not found in the marketplace', 404)
+            
+            playgroundMeta = bot.botMeta
+            playgroundMeta["mediaUrl"] = bot.marketplaceCardMediaUrl
+            playgroundMeta["name"] = post_data.get("name")
             playground = Playground(playgroundType='bot',
-                            playgroundMeta=bot.botMeta, 
+                            playgroundMeta=playgroundMeta, 
                             projectId=projectId, 
                             createdBy=current_user.email_id)
             
@@ -58,7 +62,7 @@ def create(current_user, workspaceId, projectId):
 @project_access_required
 def get(current_user, workspaceId, projectId):
     """
-    Get a playground by playground id or project id
+    Get a playground by playground id or project id or publishedServiceId
     :return: Http Json response
     """
     playgroundId = request.args.get('playgroundId')
