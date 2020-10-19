@@ -12,6 +12,9 @@ from app import logger
 import os
 import json
 from app.models.user import User
+from app.models.playground import Playground
+from flask import request, make_response, jsonify
+
 
 service = Blueprint('service', __name__)
 
@@ -249,3 +252,54 @@ def messenger_integration(current_user, workspaceId, projectId):
 
     else:
         return response('failed', 'Required data not found in POST body.', 402)
+
+@service.route('/service/manage_overview', methods=['GET'])
+@token_required
+@project_access_required
+def manage_oerview(current_user, workspaceId, projectId):
+    project = Project.get_by_id(projectId)
+    
+    services = project.services
+    servicesPayload = []
+    serviceIds = []
+    for service_id in services:
+        service = Service.get_by_id(service_id)
+        if "template" in service.serviceMeta.keys():
+            service.serviceMeta.pop("template")
+        if service.serviceType == "bot":
+            servicesPayload.append({"id": service_id, 
+                            "serviceType": service.serviceType, 
+                            "isActive": service.isActive,
+                            "serviceMeta": service.serviceMeta})
+            serviceIds.append(service._id)
+
+    
+    playgrounds = Playground.get_by_project_id(projectId)
+    playgroundsPayload = []
+    for playground in playgrounds:
+        if playground.isPublished and playground.publishedServiceId and playground.publishedServiceId in serviceIds:
+            pass
+        else:
+            if "template" in playground.playgroundMeta.keys():
+                playground.playgroundMeta.pop("template")
+            playgroundsPayload.append(
+                {
+                    "id": playground._id,
+                    "createdBy" : playground.createdBy,
+                    "createdOn" : playground.createdOn,
+                    "lastModified" : playground.lastModified,
+                    "playgroundMeta" : playground.playgroundMeta,
+                    "parentMarketplaceBot" : playground.parentMarketplaceBot
+                }
+            )
+
+    combinedPayload = {
+        "playgrounds" : playgroundsPayload,
+        "services" : servicesPayload
+    }
+
+    return make_response(jsonify({
+        'status': "success",
+        'message': "Payload retrieved successfully",
+        'service': combinedPayload
+    })), 200
