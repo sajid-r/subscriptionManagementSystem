@@ -73,3 +73,35 @@ def get_bot(current_user, workspaceId, projectId):
         'message': "Retrieved Bot Object",
         'bot': botObj
     })), 200
+
+
+@marketplace.route('/marketplace/search', methods=['POST'])
+@token_required
+@project_access_required
+def search(current_user, workspaceId, projectId):
+    """
+        Search Marketplace
+    """
+    query = request.json.get("query", None)
+    filter_obj = request.json.get("filter", None)
+    pageNum = int(request.args.get('pageNum', 1))
+    itemsPerPage = int(request.args.get('itemsPerPage', 10))
+
+    print("Query and Filter:", query, filter_obj)
+    
+    bots_list = Bot.search_bots(query, filter_obj, pageNum, itemsPerPage, projectId)
+    # totalItems = Bot.get_total(projectId, query=query, filter_obj=filter_obj)
+    payload = []
+    print(len(bots_list))
+
+    for bot in bots_list:
+        payload.append({
+            'id': bot._id,
+            'name': bot.name,
+            'description': bot.description,
+            'price' : float(bot.price),
+            'tags' : bot.tags,
+            'marketplaceCardMediaUrl' : bot.marketplaceCardMediaUrl
+        })
+    
+    return response_with_obj("success", "Successfully retrieved catalog.", payload, 200)

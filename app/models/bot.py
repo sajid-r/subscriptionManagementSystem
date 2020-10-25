@@ -8,6 +8,7 @@ from app.service.services_available import services_available
 from app.models.service import Service
 from app.models.project import Project
 from mongoengine.queryset.visitor import Q
+import re
 
 class Bot(db.Document):
     """
@@ -21,6 +22,7 @@ class Bot(db.Document):
     isPublic = db.BooleanField(required=True, default=True)
     price = db.DecimalField(required=True)
     description = db.StringField()
+    keywords = db.ListField()
     installations = db.IntField(default=0, required=True)
     overviewMediaUrl = db.StringField()
     overviewRichText = db.StringField()
@@ -87,3 +89,21 @@ class Bot(db.Document):
             payload.extend(item.tags)
 
         return payload
+
+    @staticmethod
+    def search_bots(query, filter_obj, pageNum, itemsPerPage, projectId):
+        regex = re.compile(f".*{query}.*", re.IGNORECASE)
+        regex=query
+        bot_payload = []
+
+        if query and not filter_obj:
+            objects = Bot.objects(Q(isRemoved=False) & Q(keywords__icontains=regex)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).only('_id', 'description', 'price', 'marketplaceCardMediaUrl', 'name', 'tags').all()
+
+        elif filter_obj and not query:
+            objects = Bot.get_catalog(filter_obj)
+
+        else:
+            objects = Bot.objects(Q(isPublic=True) & Q(isRemoved=False) & Q(tags__contains=filter_obj) & Q(keywords__icontains=regex)).skip((pageNum-1)*itemsPerPage).limit(itemsPerPage).only('_id', 'description', 'price', 'marketplaceCardMediaUrl', 'name', 'tags').all()
+
+
+        return objects
