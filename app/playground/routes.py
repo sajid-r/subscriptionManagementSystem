@@ -36,6 +36,8 @@ def create(current_user, workspaceId, projectId):
             playground = Playground(playgroundType='bot',
                             playgroundMeta=playgroundMeta, 
                             projectId=projectId, 
+                            parentMarketplaceBot=bot._id,
+                            publishedServiceId=post_data.get("name", None),
                             createdBy=current_user.email_id)
             
             playground.create()
