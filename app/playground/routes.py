@@ -115,7 +115,7 @@ def get(current_user, workspaceId, projectId):
         
         return {'playgrounds':payload}
     elif publishedServiceId:
-        plagrounds = Playground.get_by_project_and_published_service(projectId, publishedServiceId)
+        playgrounds = Playground.get_by_project_and_published_service(projectId, publishedServiceId)
         payload = []
         for playground in playgrounds:
             payload.append({
