@@ -197,7 +197,10 @@ def reset(current_user, workspaceId, projectId):
             playground = Playground.get_by_id(playgroundId)
             if playground:
                 bot = Bot.get_by_id(playground.parentMarketplaceBot)
-                playground.playgroundMeta=bot.botMeta
+                playgroundMeta = bot.botMeta
+                playgroundMeta["mediaUrl"] = bot.marketplaceCardMediaUrl
+                playgroundMeta["name"] = playground.playgroundMeta.get("name")
+                playground.playgroundMeta=playgroundMeta
                 playground.save()
                 return response('success', 'playground reset successful', 200)
             else:
