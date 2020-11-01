@@ -259,26 +259,12 @@ def messenger_integration(current_user, workspaceId, projectId):
 def manage_oerview(current_user, workspaceId, projectId):
     project = Project.get_by_id(projectId)
     
-    services = project.services
-    servicesPayload = []
-    serviceIds = []
-    for service_id in services:
-        service = Service.get_by_id(service_id)
-        if "template" in service.serviceMeta.keys():
-            service.serviceMeta.pop("template")
-        if service.serviceType == "bot":
-            servicesPayload.append({"id": service_id, 
-                            "serviceType": service.serviceType, 
-                            "isActive": service.isActive,
-                            "serviceMeta": service.serviceMeta})
-            serviceIds.append(service._id)
-
-    
     playgrounds = Playground.get_by_project_id(projectId)
     playgroundsPayload = []
+    srv_to_playground = {}
     for playground in playgrounds:
-        if playground.isPublished and playground.publishedServiceId and playground.publishedServiceId in serviceIds:
-            pass
+        if playground.isPublished and playground.publishedServiceId:
+            srv_to_playground[playground.publishedServiceId] = playground._id
         else:
             if "template" in playground.playgroundMeta.keys():
                 playground.playgroundMeta.pop("template")
@@ -292,6 +278,21 @@ def manage_oerview(current_user, workspaceId, projectId):
                     "parentMarketplaceBot" : playground.parentMarketplaceBot
                 }
             )
+
+    services = project.services
+    servicesPayload = []
+    serviceIds = []
+    for service_id in services:
+        service = Service.get_by_id(service_id)
+        if "template" in service.serviceMeta.keys():
+            service.serviceMeta.pop("template")
+        if service.serviceType == "bot":
+            servicesPayload.append({"id": service_id, 
+                            "serviceType": service.serviceType, 
+                            "isActive": service.isActive,
+                            "playgroundId": srv_to_playground.get(service_id),
+                            "serviceMeta": service.serviceMeta})
+            serviceIds.append(service._id)
 
     combinedPayload = {
         "playgrounds" : playgroundsPayload,
