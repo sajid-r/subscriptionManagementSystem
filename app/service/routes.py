@@ -282,17 +282,32 @@ def manage_oerview(current_user, workspaceId, projectId):
     services = project.services
     servicesPayload = []
     serviceIds = []
+    integrations_to_bot = {}
     for service_id in services:
         service = Service.get_by_id(service_id)
+
         if "template" in service.serviceMeta.keys():
             service.serviceMeta.pop("template")
-        if service.serviceType == "bot":
+
+        if service.serviceType == "textChannel" or service.serviceType == "phone":
+            if not integrations_to_bot.get(service.serviceMeta.get('parentBot', service_id)):
+                integrations_to_bot[service.serviceMeta.get('parentBot', service_id)] = []
+            integrations_to_bot[service.serviceMeta.get('parentBot', service_id)].append({"id": service_id, 
+                            "serviceType": service.serviceType, 
+                            "isActive": service.isActive,
+                            "serviceMeta": service.serviceMeta})
+
+        elif service.serviceType == "bot":
             servicesPayload.append({"id": service_id, 
                             "serviceType": service.serviceType, 
                             "isActive": service.isActive,
                             "playgroundId": srv_to_playground.get(service_id),
                             "serviceMeta": service.serviceMeta})
             serviceIds.append(service._id)
+
+    for item in servicesPayload:
+        item["integrations"] = integrations_to_bot.get(item['id'], [])
+            
 
     combinedPayload = {
         "playgrounds" : playgroundsPayload,
