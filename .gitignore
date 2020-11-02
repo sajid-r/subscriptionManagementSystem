@@ -3,6 +3,7 @@ pycache/
 *.pyc
 *.log
 *.log.*
+.idea/
 
 ### Vim ###
 [._]*.s[a-w][a-z]

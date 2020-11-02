@@ -1,19 +1,13 @@
-from flask import Blueprint, request, url_for, render_template
-import re
+from flask import Blueprint, request
 from app.auth.helper import response, response_auth, token_required
-from app.workspace.helper import workspace_access_required
-from app.project.helper import project_access_required, response_with_id
+from app.project.helper import project_access_required
 from app.playground.helper import response_with_obj
-from app.models.user import User
-from app.models.workspace import Workspace
-from app.models.project import Project
 from app.models.playground import Playground
 from app.models.bot import Bot
-from app import logger
-import os
 import json
 
 playground = Blueprint('playground', __name__)
+
 
 @playground.route('/playground/create', methods=['POST'])
 @token_required
@@ -26,32 +20,33 @@ def create(current_user, workspaceId, projectId):
         post_data = request.get_json(force=True)
         required_keys = ['botId', 'name']
         if all(name in post_data for name in required_keys):
-            bot = Bot.get_by_id(post_data.get('botId')) #bot id is fronteous generated. bot is is for a specific version of agent from dialogflow
+            bot = Bot.get_by_id(post_data.get('botId'))  # bot id is fronteous generated. bot is is for a specific
+            # version of agent from dialogflow
             if not bot:
                 return response('failed', 'Bot not found in the marketplace', 404)
-            
+
             playgroundMeta = bot.botMeta
             playgroundMeta["mediaUrl"] = bot.marketplaceCardMediaUrl
             playgroundMeta["name"] = post_data.get("name")
             playground = Playground(playgroundType='bot',
-                            playgroundMeta=playgroundMeta, 
-                            projectId=projectId, 
-                            parentMarketplaceBot=bot._id,
-                            publishedServiceId=post_data.get("name", None),
-                            createdBy=current_user.email_id)
-            
+                                    playgroundMeta=playgroundMeta,
+                                    projectId=projectId,
+                                    parentMarketplaceBot=bot._id,
+                                    publishedServiceId=post_data.get("name", None),
+                                    createdBy=current_user.email_id)
+
             playground.create()
-            
-            #add to project
+
+            # add to project
             # project = Project.get_by_id(projectId)
             # project.services.append(playground._id)
             # project.save()
 
-            #Replcing _id with id
+            # Replcing _id with id
             playground_obj = json.loads(playground.to_json())
             playground_obj['id'] = playground_obj['_id']
             playground_obj.pop('_id', None)
-            
+
             return response_with_obj('success', 'Playground created successfully', playground_obj, 200)
         else:
             return response('failed', 'Required data not found in POST body.', 402)
@@ -71,49 +66,49 @@ def get(current_user, workspaceId, projectId):
     parentMarketplaceBot = request.args.get('parentMarketplaceBot')
     publishedServiceId = request.args.get('publishedServiceId')
     if playgroundId:
-         #Get by Playground ID
+        # Get by Playground ID
         playground = Playground.get_by_id(playgroundId)
         if playground:
             return {
                 'playgroundType': playground.playgroundType,
                 'id': playground._id,
-                'projectId' : playground.projectId,
-                'createdOn' : playground.createdOn,
+                'projectId': playground.projectId,
+                'createdOn': playground.createdOn,
                 'createdBy': playground.createdBy,
-                'isRemoved' : playground.isRemoved,
-                'removedOn' : playground.removedOn,
-                'parentMarketplaceBot' : playground.parentMarketplaceBot,
-                'publishedServiceId' : playground.publishedServiceId,
+                'isRemoved': playground.isRemoved,
+                'removedOn': playground.removedOn,
+                'parentMarketplaceBot': playground.parentMarketplaceBot,
+                'publishedServiceId': playground.publishedServiceId,
                 'lastModified': playground.lastModified,
                 'playgroundMeta': playground.playgroundMeta,
-                'isPublished' : playground.isPublished,
-                'publishedOn' : playground.publishedOn
+                'isPublished': playground.isPublished,
+                'publishedOn': playground.publishedOn
             }
         else:
             return response('failed', 'playground not found', 404)
     elif parentMarketplaceBot:
         print(parentMarketplaceBot)
-        #Get by Project ID & parentMarketplaceBot
+        # Get by Project ID & parentMarketplaceBot
         playgrounds = Playground.get_by_project_and_parent_bot(projectId, parentMarketplaceBot)
         payload = []
         for playground in playgrounds:
             payload.append({
                 'playgroundType': playground.playgroundType,
                 'id': playground._id,
-                'projectId' : playground.projectId,
-                'createdOn' : playground.createdOn,
+                'projectId': playground.projectId,
+                'createdOn': playground.createdOn,
                 'createdBy': playground.createdBy,
-                'isRemoved' : playground.isRemoved,
-                'removedOn' : playground.removedOn,
-                'parentMarketplaceBot' : playground.parentMarketplaceBot,
-                'publishedServiceId' : playground.publishedServiceId,
+                'isRemoved': playground.isRemoved,
+                'removedOn': playground.removedOn,
+                'parentMarketplaceBot': playground.parentMarketplaceBot,
+                'publishedServiceId': playground.publishedServiceId,
                 'lastModified': playground.lastModified,
                 'playgroundMeta': playground.playgroundMeta,
-                'isPublished' : playground.isPublished,
-                'publishedOn' : playground.publishedOn
+                'isPublished': playground.isPublished,
+                'publishedOn': playground.publishedOn
             })
-        
-        return {'playgrounds':payload}
+
+        return {'playgrounds': payload}
     elif publishedServiceId:
         playgrounds = Playground.get_by_project_and_published_service(projectId, publishedServiceId)
         payload = []
@@ -121,42 +116,43 @@ def get(current_user, workspaceId, projectId):
             payload.append({
                 'playgroundType': playground.playgroundType,
                 'id': playground._id,
-                'projectId' : playground.projectId,
-                'createdOn' : playground.createdOn,
+                'projectId': playground.projectId,
+                'createdOn': playground.createdOn,
                 'createdBy': playground.createdBy,
-                'isRemoved' : playground.isRemoved,
-                'removedOn' : playground.removedOn,
-                'parentMarketplaceBot' : playground.parentMarketplaceBot,
-                'publishedServiceId' : playground.publishedServiceId,
+                'isRemoved': playground.isRemoved,
+                'removedOn': playground.removedOn,
+                'parentMarketplaceBot': playground.parentMarketplaceBot,
+                'publishedServiceId': playground.publishedServiceId,
                 'lastModified': playground.lastModified,
                 'playgroundMeta': playground.playgroundMeta,
-                'isPublished' : playground.isPublished,
-                'publishedOn' : playground.publishedOn
+                'isPublished': playground.isPublished,
+                'publishedOn': playground.publishedOn
             })
-        
-        return {'playgrounds':payload}
+
+        return {'playgrounds': payload}
     else:
-        #Get by Project ID
+        # Get by Project ID
         playgrounds = Playground.get_by_project_id(projectId)
         payload = []
         for playground in playgrounds:
             payload.append({
                 'playgroundType': playground.playgroundType,
                 'id': playground._id,
-                'projectId' : playground.projectId,
-                'createdOn' : playground.createdOn,
+                'projectId': playground.projectId,
+                'createdOn': playground.createdOn,
                 'createdBy': playground.createdBy,
-                'isRemoved' : playground.isRemoved,
-                'removedOn' : playground.removedOn,
-                'parentMarketplaceBot' : playground.parentMarketplaceBot,
-                'publishedServiceId' : playground.publishedServiceId,
+                'isRemoved': playground.isRemoved,
+                'removedOn': playground.removedOn,
+                'parentMarketplaceBot': playground.parentMarketplaceBot,
+                'publishedServiceId': playground.publishedServiceId,
                 'lastModified': playground.lastModified,
                 'playgroundMeta': playground.playgroundMeta,
-                'isPublished' : playground.isPublished,
-                'publishedOn' : playground.publishedOn
+                'isPublished': playground.isPublished,
+                'publishedOn': playground.publishedOn
             })
-        
-        return {'playgrounds':payload} 
+
+        return {'playgrounds': payload}
+
 
 @playground.route('/playground/publish', methods=['POST'])
 @token_required
@@ -182,6 +178,7 @@ def publish(current_user, workspaceId, projectId):
     else:
         return response('failed', 'Content-type must be json', 402)
 
+
 @playground.route('/playground/reset', methods=['POST'])
 @token_required
 @project_access_required
@@ -200,7 +197,7 @@ def reset(current_user, workspaceId, projectId):
                 playgroundMeta = bot.botMeta
                 playgroundMeta["mediaUrl"] = bot.marketplaceCardMediaUrl
                 playgroundMeta["name"] = playground.playgroundMeta.get("name")
-                playground.playgroundMeta=playgroundMeta
+                playground.playgroundMeta = playgroundMeta
                 playground.save()
                 return response('success', 'playground reset successful', 200)
             else:
@@ -208,7 +205,7 @@ def reset(current_user, workspaceId, projectId):
         else:
             return response('failed', 'Playground ID is required in the request payload.', 402)
     else:
-        return response('failed', 'Content-type must be json', 402)     
+        return response('failed', 'Content-type must be json', 402)
 
 
 @playground.route('/playground/update', methods=['POST'])
@@ -228,19 +225,19 @@ def update(current_user, workspaceId, projectId):
             if playground:
                 playground.update(update_obj)
                 playgroundObj = {
-                                'playgroundType': playground.playgroundType,
-                                'id': playground._id,
-                                'createdBy': playground.createdBy,
-                                'lastModified': playground.lastModified,
-                                'playgroundMeta': playground.playgroundMeta
-                            }
+                    'playgroundType': playground.playgroundType,
+                    'id': playground._id,
+                    'createdBy': playground.createdBy,
+                    'lastModified': playground.lastModified,
+                    'playgroundMeta': playground.playgroundMeta
+                }
                 return response_with_obj('success', 'Playground updated successfully', playgroundObj, 200)
             else:
                 return response('failed', 'playground not found', 404)
         else:
             return response('failed', 'Playground ID is required in the request payload.', 402)
     else:
-        return response('failed', 'Content-type must be json', 402)    
+        return response('failed', 'Content-type must be json', 402)
 
 
 @playground.route('/playground/delete', methods=['POST'])
@@ -268,4 +265,4 @@ def delete(current_user, workspaceId, projectId):
         else:
             return response('failed', 'Playground ID is required in the request payload.', 402)
     else:
-        return response('failed', 'Content-type must be json', 402)   
+        return response('failed', 'Content-type must be json', 402)

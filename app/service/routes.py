@@ -15,8 +15,8 @@ from app.models.user import User
 from app.models.playground import Playground
 from flask import request, make_response, jsonify
 
-
 service = Blueprint('service', __name__)
+
 
 @service.route('/service/create', methods=['POST'])
 @token_required
@@ -31,22 +31,22 @@ def create(current_user, workspaceId, projectId):
         if all(name in post_data for name in required_keys):
 
             service = Service(serviceType=post_data.get('serviceType'),
-                            serviceMeta=post_data.get('serviceMeta'), 
-                            projectId=projectId, 
-                            createdBy=current_user.email_id)
-            
+                              serviceMeta=post_data.get('serviceMeta'),
+                              projectId=projectId,
+                              createdBy=current_user.email_id)
+
             service.create()
-            
-            #add to project
+
+            # add to project
             project = Project.get_by_id(projectId)
             project.services.append(service._id)
             project.save()
 
-            #Replcing _id with id
+            # Replcing _id with id
             service_obj = json.loads(service.to_json())
             service_obj['id'] = service_obj['_id']
             service_obj.pop('_id', None)
-            
+
             return response_with_obj('success', 'Service created successfully', service_obj, 200)
         else:
             return response('failed', 'Required data not found in POST body.', 402)
@@ -64,7 +64,7 @@ def get(current_user, workspaceId, projectId):
     """
     serviceId = request.args.get('serviceId')
     if serviceId:
-         #Get by Service ID
+        # Get by Service ID
         service = Service.get_by_id(serviceId)
         if service:
             return {
@@ -78,18 +78,19 @@ def get(current_user, workspaceId, projectId):
         else:
             return response('failed', 'service not found', 404)
     else:
-        #Get by Project ID
+        # Get by Project ID
         project = Project.get_by_id(projectId)
         services = project.services
         payload = []
         for service_id in services:
             service = Service.get_by_id(service_id)
-            payload.append({"id": service_id, 
-                            "serviceType": service.serviceType, 
+            payload.append({"id": service_id,
+                            "serviceType": service.serviceType,
                             "isActive": service.isActive,
                             "serviceMeta": service.serviceMeta})
-        
-        return {'services':payload} 
+
+        return {'services': payload}
+
 
 @service.route('/service/deactivate', methods=['POST'])
 @token_required
@@ -125,7 +126,6 @@ def deactivate(current_user, workspaceId, projectId):
         return response('failed', 'Content-type must be json', 402)
 
 
-
 @service.route('/service/activate', methods=['POST'])
 @token_required
 @project_access_required
@@ -158,7 +158,7 @@ def activate(current_user, workspaceId, projectId):
 
     else:
         return response('failed', 'Content-type must be json', 402)
-    
+
 
 @service.route('/service/integrations/messenger/user', methods=['POST'])
 @token_required
@@ -171,20 +171,21 @@ def messenger_user_handle(current_user, workspaceId, projectId):
         return response('failed', 'userToken is required in the request payload.', 402)
 
     user = User.get_by_email(current_user.email_id)
-    flag=0
+    flag = 0
     if isinstance(user.tokens, list):
         for item in user.tokens:
             if item.get('channel') == 'messenger':
-                flag+=1
+                flag += 1
                 item['token'] = user_token
         if not flag:
             user.tokens.append({'channel': 'messenger', 'token': user_token})
         user.save()
     elif not user.tokens:
-            user.tokens = [{'channel': 'messenger', 'token': user_token}]
-            user.save()
+        user.tokens = [{'channel': 'messenger', 'token': user_token}]
+        user.save()
 
     return response_with_obj('success', 'Service created successfully', {'pages': response}, 200)
+
 
 @service.route('/service/integrations/messenger/create', methods=['POST'])
 @token_required
@@ -198,24 +199,24 @@ def messenger_integration(current_user, workspaceId, projectId):
 
     if all([page_token, page_id, page_name, bot_id, language_code]):
 
-        #check if integrations already exist for the facebook page
+        # check if integrations already exist for the facebook page
         existingIntegrations = Service.objects(__raw__={
-                                                        'serviceMeta.channelId': str(page_id), 
-                                                        'serviceMeta.channel': 'messenger',
-                                                        'isRemoved': False
-                                                        }).count()
-        #if integrations exist, disable them
+            'serviceMeta.channelId': str(page_id),
+            'serviceMeta.channel': 'messenger',
+            'isRemoved': False
+        }).count()
+        # if integrations exist, disable them
         print("existingIntegrations", existingIntegrations)
         if existingIntegrations:
             service = Service.objects(__raw__={
-                                                'serviceMeta.channelId': str(page_id), 
-                                                'serviceMeta.channel': 'messenger',
-                                                'isRemoved' : False
-                                                }).first()
+                'serviceMeta.channelId': str(page_id),
+                'serviceMeta.channel': 'messenger',
+                'isRemoved': False
+            }).first()
             service.isActive = True
             service.save()
 
-            #Replcing _id with id
+            # Replcing _id with id
             service_obj = json.loads(service.to_json())
             service_obj['id'] = service_obj['_id']
             service_obj.pop('_id', None)
@@ -223,42 +224,43 @@ def messenger_integration(current_user, workspaceId, projectId):
             return response_with_obj('success', 'Existing service activated successfully', service_obj, 200)
 
         else:
-            #create new service
-            service = Service(  serviceType='textChannel',
-                                serviceMeta={
-                                    'channel': 'messenger',
-                                    'channelId': page_id,
-                                    'channelName': page_name,
-                                    'parentBot': bot_id,
-                                    'accessToken': page_token,
-                                    'languageCode': language_code
-                                }, 
-                                projectId=projectId, 
-                                createdBy=current_user.email_id)
+            # create new service
+            service = Service(serviceType='textChannel',
+                              serviceMeta={
+                                  'channel': 'messenger',
+                                  'channelId': page_id,
+                                  'channelName': page_name,
+                                  'parentBot': bot_id,
+                                  'accessToken': page_token,
+                                  'languageCode': language_code
+                              },
+                              projectId=projectId,
+                              createdBy=current_user.email_id)
 
             service.create()
-                    
-            #add to project
+
+            # add to project
             project = Project.get_by_id(projectId)
             project.services.append(service._id)
             project.save()
 
-            #Replcing _id with id
+            # Replcing _id with id
             service_obj = json.loads(service.to_json())
             service_obj['id'] = service_obj['_id']
             service_obj.pop('_id', None)
-            
+
             return response_with_obj('success', 'Service created successfully', service_obj, 200)
 
     else:
         return response('failed', 'Required data not found in POST body.', 402)
+
 
 @service.route('/service/manage_overview', methods=['GET'])
 @token_required
 @project_access_required
 def manage_oerview(current_user, workspaceId, projectId):
     project = Project.get_by_id(projectId)
-    
+
     playgrounds = Playground.get_by_project_id(projectId)
     playgroundsPayload = []
     srv_to_playground = {}
@@ -271,11 +273,11 @@ def manage_oerview(current_user, workspaceId, projectId):
             playgroundsPayload.append(
                 {
                     "id": playground._id,
-                    "createdBy" : playground.createdBy,
-                    "createdOn" : playground.createdOn,
-                    "lastModified" : playground.lastModified,
-                    "playgroundMeta" : playground.playgroundMeta,
-                    "parentMarketplaceBot" : playground.parentMarketplaceBot
+                    "createdBy": playground.createdBy,
+                    "createdOn": playground.createdOn,
+                    "lastModified": playground.lastModified,
+                    "playgroundMeta": playground.playgroundMeta,
+                    "parentMarketplaceBot": playground.parentMarketplaceBot
                 }
             )
 
@@ -292,26 +294,25 @@ def manage_oerview(current_user, workspaceId, projectId):
         if service.serviceType == "textChannel" or service.serviceType == "phone":
             if not integrations_to_bot.get(service.serviceMeta.get('parentBot', service_id)):
                 integrations_to_bot[service.serviceMeta.get('parentBot', service_id)] = []
-            integrations_to_bot[service.serviceMeta.get('parentBot', service_id)].append({"id": service_id, 
-                            "serviceType": service.serviceType, 
-                            "isActive": service.isActive,
-                            "serviceMeta": service.serviceMeta})
+            integrations_to_bot[service.serviceMeta.get('parentBot', service_id)].append({"id": service_id,
+                                                                                          "serviceType": service.serviceType,
+                                                                                          "isActive": service.isActive,
+                                                                                          "serviceMeta": service.serviceMeta})
 
         elif service.serviceType == "bot":
-            servicesPayload.append({"id": service_id, 
-                            "serviceType": service.serviceType, 
-                            "isActive": service.isActive,
-                            "playgroundId": srv_to_playground.get(service_id),
-                            "serviceMeta": service.serviceMeta})
+            servicesPayload.append({"id": service_id,
+                                    "serviceType": service.serviceType,
+                                    "isActive": service.isActive,
+                                    "playgroundId": srv_to_playground.get(service_id),
+                                    "serviceMeta": service.serviceMeta})
             serviceIds.append(service._id)
 
     for item in servicesPayload:
         item["integrations"] = integrations_to_bot.get(item['id'], [])
-            
 
     combinedPayload = {
-        "playgrounds" : playgroundsPayload,
-        "services" : servicesPayload
+        "playgrounds": playgroundsPayload,
+        "services": servicesPayload
     }
 
     return make_response(jsonify({
